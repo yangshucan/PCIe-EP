@@ -1,0 +1,109 @@
+{
+  "variant": "pipelined",
+  "formula": "T*K*H*b/t",
+  "bandwidth_unit": "decimal GB/s",
+  "T_scope": "input tokens per GPU; no extra world-size factor",
+  "rows": [
+    {
+      "tokens_per_gpu": 16,
+      "topk": 8,
+      "hidden": 7168,
+      "element_bytes": 2,
+      "logical_bytes_per_gpu": 1835008,
+      "full_mean_ms": 1.8295599967241287,
+      "bandwidth_GBps": 1.0029777669415738,
+      "sample_count": 40
+    },
+    {
+      "tokens_per_gpu": 32,
+      "topk": 8,
+      "hidden": 7168,
+      "element_bytes": 2,
+      "logical_bytes_per_gpu": 3670016,
+      "full_mean_ms": 1.796728003025055,
+      "bandwidth_GBps": 2.042610786841965,
+      "sample_count": 40
+    },
+    {
+      "tokens_per_gpu": 64,
+      "topk": 8,
+      "hidden": 7168,
+      "element_bytes": 2,
+      "logical_bytes_per_gpu": 7340032,
+      "full_mean_ms": 1.921260792016983,
+      "bandwidth_GBps": 3.8204246037281946,
+      "sample_count": 40
+    },
+    {
+      "tokens_per_gpu": 128,
+      "topk": 8,
+      "hidden": 7168,
+      "element_bytes": 2,
+      "logical_bytes_per_gpu": 14680064,
+      "full_mean_ms": 2.0693624049425123,
+      "bandwidth_GBps": 7.094003430688505,
+      "sample_count": 40
+    },
+    {
+      "tokens_per_gpu": 256,
+      "topk": 8,
+      "hidden": 7168,
+      "element_bytes": 2,
+      "logical_bytes_per_gpu": 29360128,
+      "full_mean_ms": 2.5953424096107485,
+      "bandwidth_GBps": 11.312622138519078,
+      "sample_count": 40
+    },
+    {
+      "tokens_per_gpu": 512,
+      "topk": 8,
+      "hidden": 7168,
+      "element_bytes": 2,
+      "logical_bytes_per_gpu": 58720256,
+      "full_mean_ms": 4.003641599416733,
+      "bandwidth_GBps": 14.666711428054551,
+      "sample_count": 40
+    },
+    {
+      "tokens_per_gpu": 1024,
+      "topk": 8,
+      "hidden": 7168,
+      "element_bytes": 2,
+      "logical_bytes_per_gpu": 117440512,
+      "full_mean_ms": 7.156367206573487,
+      "bandwidth_GBps": 16.41063246337121,
+      "sample_count": 40
+    },
+    {
+      "tokens_per_gpu": 2048,
+      "topk": 8,
+      "hidden": 7168,
+      "element_bytes": 2,
+      "logical_bytes_per_gpu": 234881024,
+      "full_mean_ms": 13.121780061721802,
+      "bandwidth_GBps": 17.90008847086099,
+      "sample_count": 40
+    },
+    {
+      "tokens_per_gpu": 4096,
+      "topk": 8,
+      "hidden": 7168,
+      "element_bytes": 2,
+      "logical_bytes_per_gpu": 469762048,
+      "full_mean_ms": 24.58625192642212,
+      "bandwidth_GBps": 19.106696270982262,
+      "sample_count": 40
+    },
+    {
+      "tokens_per_gpu": 8192,
+      "topk": 8,
+      "hidden": 7168,
+      "element_bytes": 2,
+      "logical_bytes_per_gpu": 939524096,
+      "full_mean_ms": 47.69235849380493,
+      "bandwidth_GBps": 19.699677803144098,
+      "sample_count": 40
+    }
+  ],
+  "anonymous_samples_sha256": "8cca789e08c8cc05f80794f4a0931ba85bb7eaa1e3ab21a74dd7dafb4d4c4499"
+}

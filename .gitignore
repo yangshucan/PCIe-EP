@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+*.so
+*.o
+build/
+.DS_Store
+._*
+
+# Local experiment outputs may contain machine and network identities.
+/results/
+/RESULTS.md
+/RESULTS_S5_S8.md
+.env
+.env.*
+*.pem
+*.key
+*.log
+*.trace.json
+*.tar
+*.tar.gz
+*.zip
+*.cubin
+*.ptx
+*.sass
+*.ncu-rep
+*.nsys-rep
