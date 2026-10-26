@@ -1,4 +1,4 @@
-"""Adapt the S5–S8 native API to the collective S1–S4 setup protocol."""
+"""Bind the current native runtime to collective host-memory initialization."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from .config import HostStagedConfig
 
 
 class AdvancedExtensionAdapter:
-    """Keep shared-memory setup and failure coordination common to all stages."""
+    """Keep shared-memory setup and failure coordination consistent across all supported options."""
 
     def __init__(self, extension: Any, config: HostStagedConfig, control_group: Any = None) -> None:
         self.extension = extension

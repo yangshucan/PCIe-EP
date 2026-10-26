@@ -26,9 +26,6 @@ _module = load(
     verbose=bool(int(os.getenv("PCIE_EP_BUILD_VERBOSE", "0"))),
 )
 
-Runtime = _module.Runtime
-create_segments = _module.create_segments
-prepare_segment = _module.prepare_segment
 AdvancedRuntime = _module.AdvancedRuntime
 create_advanced_segments = _module.create_advanced_segments
 prepare_advanced_segment = _module.prepare_advanced_segment

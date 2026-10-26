@@ -1,5 +1,7 @@
 # PCIe Host-staged EP Dispatch：可行性与详细设计
 
+> 2026-10-26：本文的阶段拆分保留为设计推导，不代表仓库仍保存多套历史实现。当前只有一个 native runtime，S1–S4 Runtime、整批传输、S5 串行布局均已移除；默认使用 C32/pipelined F2。当前支持与清理范围见 [CLEANUP.md](../../CLEANUP.md) 和 [API.md](../../API.md)。
+
 2026-10-25：本文保留原始协议推导和阶段目标；当前 S5–S8 的具体路径、FP8 格式、Graph 合同与 NUMA payload/control 放置边界见 [实现记录](./advanced-implementation.md) 和 [API](../../API.md)。
 
 ## 1. 结论与范围

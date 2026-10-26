@@ -24,8 +24,8 @@ class HostStagedEPBuffer:
     as ``group``.  If omitted, a Gloo group is used directly or a CPU-only
     auxiliary group is created.  No NCCL collective is issued by this class.
 
-    The native runtime owns preallocated result pools: two in S1-S4 and
-    ``config.output_pool_size`` in S5+. Python retains inputs and metadata,
+    The native runtime owns ``config.output_pool_size`` preallocated result
+    pools. Python retains inputs and metadata,
     establishes producer/consumer stream dependencies, and exposes GPU valid
     counts; it never reads those counts during dispatch.
     """
@@ -87,8 +87,6 @@ class HostStagedEPBuffer:
         self.global_ranks = tuple(dist.get_process_group_ranks(self.group))
         if num_experts % self.num_ranks:
             raise ValueError("Experts must be uniformly divisible among EP ranks")
-        if self.config.stage == 1 and self.num_ranks != 2:
-            raise ValueError("S1 is the two-GPU transport baseline; use stage >= 2")
         self.num_max_tokens_per_rank = num_max_tokens_per_rank
         self.hidden, self.num_topk, self.num_experts = hidden, num_topk, num_experts
         self.deterministic = deterministic
@@ -140,7 +138,7 @@ class HostStagedEPBuffer:
         # Loading/compiling CUDA is intentionally lazy until construction.
         from .. import _C
 
-        extension = AdvancedExtensionAdapter(_C, self.config, self.control_group) if self.config.advanced else _C
+        extension = AdvancedExtensionAdapter(_C, self.config, self.control_group)
 
         self.directory, self.buffer_id = comm.create_shared_segments(
             extension,
@@ -384,10 +382,7 @@ class HostStagedEPBuffer:
             self._wait_for_dispatch_inputs(compute, previous_event)
             _record_tensors((x, topk_idx, topk_weights), self._comm_stream)
             arguments = (x, topk_idx, topk_weights, self.config.stage, alignment, do_expand, do_zero_padding)
-            if self.config.advanced:
-                result = self.runtime.dispatch(*arguments, cached_layout, False)
-            else:
-                result = self.runtime.dispatch(*arguments)
+            result = self.runtime.dispatch(*arguments, cached_layout, False)
             if cumulative_local_expert_recv_stats is not None:
                 cumulative_local_expert_recv_stats.add_(result["expert_counts"])
                 cumulative_local_expert_recv_stats.record_stream(self._comm_stream)

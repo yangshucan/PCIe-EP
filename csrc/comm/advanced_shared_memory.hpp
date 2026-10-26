@@ -18,7 +18,7 @@ struct AdvancedConfig {
     // their existing ABI; unique receives always use the reference transport.
     enum class ReceiveExpandMode { Scalar, Vectorized, Pipelined };
 
-    int stage = 5;
+    int stage = 6;
     int channels = 1;
     int stages = 2;
     int payload_slots = 256;
@@ -51,6 +51,7 @@ struct AdvancedConfig {
 
     AdvancedConfig(int num_ranks, const py::dict& options) {
         stage = option(options, "stage", stage);
+        TORCH_CHECK(stage >= 6 && stage <= 8, "retired development stage; use a current S6-S8 configuration");
         channels = option(options, "channels", channels);
         stages = option(options, "pipeline_stages", option(options, "stages", stages));
         payload_slots = option(options, "payload_slots", payload_slots);
@@ -99,7 +100,6 @@ struct AdvancedConfig {
             const auto found = std::find(physical_numa_nodes.begin(), physical_numa_nodes.end(), node);
             rank_numa_domains.push_back(found == physical_numa_nodes.end() ? 0 : int(found - physical_numa_nodes.begin()));
         }
-        TORCH_CHECK(stage >= 5 && stage <= 8, "advanced stage must be 5..8");
         TORCH_CHECK(channels >= 1 && channels <= 32, "channels must be 1..32");
         TORCH_CHECK(stages >= 2 && stages <= kNumMaxLocalStages, "pipeline_stages must be 2 or 3");
         TORCH_CHECK(payload_slots > 0 && descriptor_slots > 0 && replica_slots > 0 && timeout_ms > 0, "invalid advanced capacity or timeout");

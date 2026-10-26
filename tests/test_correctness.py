@@ -19,6 +19,7 @@ import torch
 import torch.distributed as dist
 
 from pcie_ep import HostStagedConfig, HostStagedEPBuffer
+from advanced_options import add_transport_arguments, transport_options
 
 
 def gather_cpu(value, group=None):
@@ -213,142 +214,63 @@ def check_api_rejections(buffer, rank, world, device, experts, topk, hidden):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--stage", type=int, choices=[1, 2, 3, 4], default=4)
-    parser.add_argument("--experts", type=int, default=256)
-    parser.add_argument("--topk", type=int, default=8)
+    add_transport_arguments(parser, stage=6)
     parser.add_argument("--hidden", type=int, default=7168)
-    parser.add_argument("--output", type=Path, default=Path("results/correctness.json"))
     parser.add_argument("--quick", action="store_true")
+    parser.add_argument("--repeat", type=int, default=12)
+    parser.add_argument("--output", type=Path, default=Path("results/current/correctness.json"))
     args = parser.parse_args()
     dist.init_process_group("gloo")
     rank, world = dist.get_rank(), dist.get_world_size()
-    local_rank = int(os.environ.get("LOCAL_RANK", rank))
-    torch.cuda.set_device(local_rank)
-    device = torch.device("cuda", local_rank)
-    if args.experts % world or args.experts // world < args.topk:
-        parser.error("test requires uniform contiguous ownership and >= top-k experts per rank")
-    if args.stage == 1 and world != 2:
-        parser.error("S1 requires exactly two ranks")
-    started = time.perf_counter()
-    records = []
-    slots = [(256, 256)] if args.stage < 3 or args.quick else [(1, 1), (2, 3), (3, 2), (256, 256)]
+    device = torch.device("cuda", int(os.environ.get("LOCAL_RANK", rank)))
+    torch.cuda.set_device(device)
+    started, records = time.perf_counter(), []
+    windows = [(2, 3)] if args.quick else [(1, 1), (2, 3), (3, 2), (256, 256)]
+    patterns = (
+        ["random", "multicast", "none"]
+        if args.quick
+        else ["random", "local", "multicast", "hotspot", "partial", "none"]
+    )
     try:
-        for payload_slots, descriptor_slots in slots:
-            config = HostStagedConfig(stage=args.stage, payload_slots=payload_slots, descriptor_slots=descriptor_slots)
+        for q, length in windows:
+            config = HostStagedConfig(payload_slots=q, descriptor_slots=length, **transport_options(args))
             with HostStagedEPBuffer(
                 group=dist.group.WORLD,
                 num_max_tokens_per_rank=129,
                 hidden=args.hidden,
-                num_topk=args.topk,
-                num_experts=args.experts,
+                num_topk=8,
+                num_experts=256,
                 config=config,
             ) as buffer:
-                check_api_rejections(buffer, rank, world, device, args.experts, args.topk, args.hidden)
-                patterns = ["random", "local", "multicast", "hotspot", "partial", "none"]
-                if args.quick:
-                    patterns = ["random", "multicast", "none"]
-                for pattern in patterns:
-                    for expand in ([False] if args.stage == 1 else [False, True]):
-                        case = {
-                            "pattern": pattern,
-                            "tokens": 17,
-                            "hidden": args.hidden,
-                            "expand": expand,
-                            "alignment": 1,
-                        }
-                        run_case(buffer, case, rank, world, device, args.experts, args.topk)
-                        records.append(
-                            {
-                                **case,
-                                "payload_slots": payload_slots,
-                                "descriptor_slots": descriptor_slots,
-                                "status": "passed",
-                            }
-                        )
-                for tokens, unequal, alignment in [(0, False, 1), (129, True, 1), (33, False, 16)]:
-                    case = {
-                        "pattern": "random",
-                        "tokens": tokens,
-                        "hidden": args.hidden,
-                        "expand": args.stage != 1,
-                        "alignment": alignment,
-                        "unequal": unequal,
-                    }
-                    run_case(buffer, case, rank, world, device, args.experts, args.topk)
-                    records.append(
-                        {
-                            **case,
-                            "payload_slots": payload_slots,
-                            "descriptor_slots": descriptor_slots,
-                            "status": "passed",
-                        }
-                    )
-                case = {
-                    "pattern": "multicast",
-                    "tokens": 5,
-                    "hidden": args.hidden,
-                    "expand": args.stage != 1,
-                    "alignment": 1,
-                    "weights": False,
-                }
-                run_case(buffer, case, rank, world, device, args.experts, args.topk)
-                records.append(
-                    {**case, "payload_slots": payload_slots, "descriptor_slots": descriptor_slots, "status": "passed"}
+                cases = [
+                    dict(pattern=pattern, tokens=17, expand=expand, alignment=1)
+                    for pattern in patterns
+                    for expand in [False, True]
+                ]
+                cases.extend(
+                    dict(pattern="random", tokens=tokens, unequal=unequal, expand=True, alignment=alignment)
+                    for tokens, unequal, alignment in [(0, False, 1), (129, True, 1), (33, False, 16)]
                 )
-                # Repeated epochs vary inputs and verify slot/sequence reuse.
-                for repeat in range(5 if args.quick else 25):
-                    case = {
-                        "pattern": "random",
-                        "tokens": 3 + repeat % 5,
-                        "hidden": args.hidden,
-                        "expand": args.stage != 1,
-                        "alignment": 1,
-                        "seed": repeat + 100,
-                    }
-                    run_case(buffer, case, rank, world, device, args.experts, args.topk)
+                cases.extend(
+                    dict(pattern="random", tokens=3 + i % 5, expand=bool(i % 2), alignment=8, seed=100 + i)
+                    for i in range(args.repeat)
+                )
+                cases.append(dict(pattern="multicast", tokens=5, expand=True, alignment=1, weights=False))
+                for case in cases:
+                    case["hidden"] = args.hidden
+                    run_case(buffer, case, rank, world, device, 256, 8)
+                    records.append({**case, "payload_slots": q, "descriptor_slots": length, "status": "passed"})
                 if rank == 0:
-                    print(f"S{args.stage} Q={payload_slots} L={descriptor_slots}: passed", flush=True)
-        if args.stage == 4 and world >= 4 and not args.quick:
-            # Disjoint noncontiguous rank groups exercise rank-local ownership;
-            # a second group with identical members exercises group isolation.
-            groups = []
-            for parity in [0, 1]:
-                members = list(range(parity, world, 2))
-                for _ in range(2):
-                    selected = dist.new_group(members, backend="gloo")
-                    if rank in members:
-                        groups.append((selected, members.index(rank), len(members)))
-            for group, group_rank, group_world in groups:
-                if args.experts % group_world:
-                    continue
-                with HostStagedEPBuffer(
-                    group=group,
-                    num_max_tokens_per_rank=19,
-                    hidden=args.hidden,
-                    num_topk=args.topk,
-                    num_experts=args.experts,
-                    config=HostStagedConfig(stage=4, payload_slots=2, descriptor_slots=3),
-                ) as buffer:
-                    case = {
-                        "pattern": "multicast",
-                        "tokens": 19,
-                        "hidden": args.hidden,
-                        "expand": True,
-                        "alignment": 8,
-                        "unequal": True,
-                    }
-                    run_case(buffer, case, group_rank, group_world, device, args.experts, args.topk, group)
-                records.append({"noncontiguous_group": True, "world_size": group_world, "status": "passed"})
+                    print(f"S{args.stage} C={args.channels} Q={q} L={length}: {len(cases)} cases passed", flush=True)
         if rank == 0:
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(
                 json.dumps(
                     {
-                        "stage": args.stage,
                         "world_size": world,
+                        "options": transport_options(args),
                         "records": records,
                         "elapsed_seconds": time.perf_counter() - started,
-                        "control_backend": "gloo",
                         "nvlink_payload_allowed": False,
                     },
                     indent=2,

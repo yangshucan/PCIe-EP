@@ -166,3 +166,5 @@ SM90/CUDA 13 实际构建的资源与机器码如下，完整输出和 SHA-256 �
 当前正式结果仅展示最新 pipelined 实现，按用户指定的 `bw = T * K * H * b / t` 计算。T 为每张 GPU 的输入 token 数，K=8、H=7168、BF16 的 b=2 字节，t 为完整 dispatch 平均时延（秒）；GB/s 为十进制。分子在去重前计算，包含全部 top-k 分支，不排除本地专家，也不额外乘或除 GPU 数。公开结果在 `benchmarks/data/f2_pipelined_summary.json` 与 `.csv`，从两轮各 20 个原始时延样本合并重算，未重跑 kernel。
 
 历史原始文件中的 `F * H * 2` 远端去重投递量、`U * H * 2` 源端逻辑 host 写量和 `(U+F) * H * 2` host payload 总访问量仍保留作为独立计数，其旧带宽字段不代表当前公式。两轮测试反转执行顺序，每条路径每个 batch 各 5 warmup、20 measurement；原始样本不变。
+
+2026-10-26 清理说明：默认已改为 pipelined，所有模式共用同一 Runtime。历史独立 Runtime 与串行布局不再编译；旧测量和源码快照移出工作目录。参见 [CLEANUP.md](../../CLEANUP.md)。

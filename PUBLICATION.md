@@ -22,8 +22,9 @@ pipelined experiment: workload configuration, two rounds of full-dispatch timing
 samples, and the recalculated table. Rank numbers are anonymous logical indices.
 All timing values are preserved. No GPU experiment was rerun for publication.
 
-Runtime source hashes in `benchmarks/data/f2_runtime_source_sha256.json` match
-the sources used by the completed experiment. Publication changes to execution
+Runtime source hashes in `benchmarks/data/f2_measured_runtime_source_sha256.json` identify
+the original sources used by the completed experiment before the later cleanup.
+They do not assert that the cleaned current source is byte-identical. Publication changes to execution
 scripts, report tools and documentation are outside that fingerprint scope.
 Machine-specific executed source archives and binaries remain local.
 

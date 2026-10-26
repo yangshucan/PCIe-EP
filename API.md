@@ -1,4 +1,4 @@
-# PCIe host-staged EP Python API（S1–S8）
+# PCIe host-staged EP Python API（当前统一运行时）
 
 本实现提供单机、单进程单 GPU 的 BF16 token dispatch。跨 GPU payload 由 GPU SM 写入和读取共享 mapped host memory，不使用 CUDA peer access、NVLink 或 NCCL 数据传输。S8 可增加后台 CPU worker，将跨 NUMA payload 复制到目标 NUMA 的 replica ring。初始化、Graph 准备和关闭允许 CPU 协调；正常 dispatch 和 Graph replay 不把 counts 读回 CPU，也不阻塞调用 CPU 等待 GPU 或 relay 完成。
 
@@ -21,7 +21,7 @@ with HostStagedEPBuffer(
     hidden=7168,
     num_topk=8,
     num_experts=256,
-    config=HostStagedConfig(stage=4, payload_slots=256, descriptor_slots=256),
+    config=HostStagedConfig(stage=6, payload_slots=256, descriptor_slots=256),
 ) as buffer:
     # x: contiguous CUDA BF16 [T, 7168]
     # topk_idx: contiguous CUDA int64 [T, 8]
@@ -40,7 +40,7 @@ with HostStagedEPBuffer(
 dist.destroy_process_group()
 ```
 
-示例中的 `x`、路由和下游 kernel 由应用提供。构造时必须提供 `num_experts`；S4 不在第一次 dispatch 中隐式准备输出容量。
+示例中的 `x`、路由和下游 kernel 由应用提供。构造时必须提供 `num_experts`；构造时预分配输出容量，第一次 dispatch 不隐式扩容。
 
 ## 构造与配置
 
@@ -61,33 +61,33 @@ dist.destroy_process_group()
 HostStagedConfig(
     payload_slots=256,
     descriptor_slots=256,
-    channels=1,
-    stage=4,
+    channels=32,
+    stage=6,
     timeout_ms=30000,
     directory=None,
     numa_mode="direct",
 )
 ```
 
-Q/L 表示每个源 ring 和每个源→目标 descriptor 队列的容量，不限制单次 dispatch 的总 token 数。S3+ 的 host payload 容量由 Q 决定，不为 Tmax 分配整批 host staging。S1/S2 保留整批 staging 作为正确性基线；S1 限制双 GPU，S2 支持多 GPU。
+Q/L 表示每个源 ring 和每个源→目标 descriptor 队列的容量，不限制单次 dispatch 的总 token 数。host payload 使用有界 ring，不再保留整批 staging。stage 6/7/8 仅表示同一运行时的能力门槛；stage 1–5 已删除并会报错。
 
 | 配置 | 支持阶段与含义 |
 |---|---|
-| `channels=1` | S5+ 可使用 1–32 个独立 channel；S1–S4 固定为 1。 |
-| `warp_specialization=False` | S5+ 可分工执行 TX/RX control 与 payload copy。 |
-| `pipeline_stages=2` | S5+ 支持 2 或 3 个 GPU payload stage。 |
-| `fuse_receive_expand=False` | S5+ 可将接收与 expert expansion 融合。 |
-| `receive_expand_mode="scalar"` | F2 可选 `scalar` / `vectorized` / `pipelined`；后两者要求 S5+、开启 F2 和 warp specialization。 |
-| `source_fusion=False` | S6+ source-side 路由与发送融合。 |
+| `channels=32` | 可使用 1–32 个独立 channel。 |
+| `warp_specialization=True` | 可分工执行 TX/RX control 与 payload copy。 |
+| `pipeline_stages=2` | 支持 2 或 3 个 GPU payload stage。 |
+| `fuse_receive_expand=True` | 可将接收与 expert expansion 融合。 |
+| `receive_expand_mode="pipelined"` | F2 可选 `scalar` / `vectorized` / `pipelined`；后两者要求开启 F2 和 warp specialization。 |
+| `source_fusion=True` | S6+ source-side 路由与发送融合。 |
 | `enable_graph=False` | S6+ 预分配独立 Graph 输出池。 |
 | `wire_dtype="bf16"` | S7+ 可选 `"fp8_e4m3"`，每 token 使用 FP32 scale；输入和输出仍为 BF16，本地旁路保持原始 BF16。 |
-| `output_pool_size=3` | S5+ eager 输出池个数；S1–S4 固定为两个。 |
+| `output_pool_size=3` | eager 输出池个数。 |
 | `numa_mode="direct"` | S8 可选 `"relay"`，跨 NUMA 由后台 CPU worker 主动复制。 |
 | `replica_slots=256` | S8 每 channel、每目标 NUMA domain 的 replica ring 容量。 |
 
 高级阶段可组合此前阶段的优化，例如 S8 relay 可与 FP8、缓存路由和 Graph 同用。功能仍需显式启用，单独选择更高 stage 不会自动打开所有开关。
 
-`receive_expand_mode="vectorized"` 将 shared→expert BF16 拷贝改为 16-byte 向量；`"pipelined"` 再用独立 RX/scatter warp 组流水，CTA 从 256 增至 352 threads。`do_expand=False` 始终回到原 unique 路径。默认仍为 scalar，模式在构造时固定，各 rank 须一致；H 不能被 8 整除时本地 scatter 完整回退标量。详见 [F2 实现与生命周期](docs/pcie-ep/f2-receive-expand.md)和[十个 batch 的实测](RESULTS_F2.md)。
+`receive_expand_mode="vectorized"` 将 shared→expert BF16 拷贝改为 16-byte 向量；`"pipelined"` 再用独立 RX/scatter warp 组流水，CTA 从 256 增至 352 threads。`do_expand=False` 始终回到原 unique 路径。默认改为 pipelined，模式在构造时固定，各 rank 须一致；H 不能被 8 整除时本地 scatter 完整回退标量。详见 [F2 实现与生命周期](docs/pcie-ep/f2-receive-expand.md)和[十个 batch 的实测](RESULTS_F2.md)。
 
 FP8 wire 支持有限 BF16 输入，不保证 NaN/Inf 的传输语义。非零 token 的 scale 为 `max(maxabs/448, 2**-126)`，零 token 的 scale 为 1。`2**-126` 是 FP32 最小正规数；该下限防止 BF16 极小值或 subnormal 产生无穷大的倒数，进而使零分量在量化时变成 NaN。解码按 FP8 值乘以 scale 后舍入回 BF16。
 
@@ -153,7 +153,7 @@ recv_x, recv_topk_idx, recv_topk_weights, handle, event
 
 ## 预分配结果池
 
-S1–S4 每个 runtime 预分配两个输出池；S5+ 默认预分配三个 eager 输出池，可用 `output_pool_size` 在 2–8 之间调整。结果仍被外部 Tensor 引用时不会覆盖。所有输出池都被占用时，再提交 dispatch 会得到 `pool exhausted`，不会在 CPU 上等待，也不会隐式扩容。
+运行时默认预分配三个 eager 输出池，可用 `output_pool_size` 在 2–8 之间调整。结果仍被外部 Tensor 引用时不会覆盖。所有输出池都被占用时，再提交 dispatch 会得到 `pool exhausted`，不会在 CPU 上等待，也不会隐式扩容。
 
 仅保留某个 weights、metadata 或 count Tensor 同样会占用其池。需要长期保留时，在正确的 CUDA stream 依赖下 clone 所需数据，然后释放原始结果、handle、event 和 tensor 引用。常规循环只保留最后一轮结果即可轮换使用池。输出容量与最大 T/K/H 有关；启用 Graph 时还会额外预分配一个专用输出池。
 
@@ -221,4 +221,4 @@ EventOverlap 支持 `.wait()`、`.current_stream_wait()` 和 `with event:`；上
 
 传入现有 NCCL group 时，仅通过现有 backend `_comm_ptr` 借用原始 communicator，并保留 group 强引用。实现不创建 managed NCCL communicator、不调用 NCCL payload collective，也不把控制组切换到 NCCL。`comm_reused` 与 `comm_reuse_status` 可查询实际状态；公开 PyTorch 版本缺少 `_comm_ptr` 时会记录 unavailable，不能称为已经复用。
 
-当前不支持 combine/backward、非默认 `num_sms` / `num_qps`、handle copy 和 DeepEP FP8 scale-factor layout。S7 的 FP8 仅改变 wire payload，仍接受和返回 BF16 Tensor。S1–S4 保持原有合同，对更高阶段专属功能的显式请求会报错。
+当前不支持 combine/backward、非默认 `num_sms` / `num_qps`、handle copy 和 DeepEP FP8 scale-factor layout。S7 的 FP8 仅改变 wire payload，仍接受和返回 BF16 Tensor。stage 1–5 不再提供运行时实现；FP8 与 relay 分别要求 stage 7+ 与 stage 8。

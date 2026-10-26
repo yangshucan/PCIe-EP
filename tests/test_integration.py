@@ -164,7 +164,7 @@ def stream_cases(args):
 def pool_case(args):
     values, inputs = cpu_inputs(args)
     next_values, next_inputs = cpu_inputs(args, increment=2)
-    capacity = 3 if args.stage >= 5 else 2
+    capacity = 3
     with new_buffer(args) as buffer:
         retained = []
         for index in range(capacity):

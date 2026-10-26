@@ -1,13 +1,11 @@
 #include <memory>
 #include <string>
 
-#include "buffers/host_staged.hpp"
 #include "buffers/advanced.hpp"
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, extension) {
-    using pcie_ep::host_staged::Runtime;
     using pcie_ep::host_staged::AdvancedRuntime;
     using pcie_ep::host_staged::AdvancedLayout;
 
@@ -25,11 +23,4 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, extension) {
         .def("set_test_delays", &AdvancedRuntime::set_test_delays)
         .def("set_relay_delay_ns", &AdvancedRuntime::set_relay_delay_ns)
         .def("close", &AdvancedRuntime::close);
-    extension.def("create_segments", &pcie_ep::host_staged::create_segments);
-    extension.def("prepare_segment", &pcie_ep::host_staged::prepare_segment);
-    py::class_<Runtime, std::shared_ptr<Runtime>>(extension, "Runtime")
-        .def(py::init<std::string, int, int, int, int, int, int, int, int, int, int>())
-        .def("dispatch", &Runtime::dispatch)
-        .def("pool_debug", &Runtime::pool_debug)
-        .def("close", &Runtime::close);
 }

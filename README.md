@@ -2,9 +2,11 @@
 
 Single-host, GPU-initiated expert dispatch with source and receiver token deduplication. Each source writes one payload to registered shared CPU memory; each target GPU reads it once. Local expert branches expand inside GPU memory. The payload path uses GPU SM loads/stores through PCIe, with system-scope READY/ACK load/store handshakes.
 
-The implementation retains S1–S4 reference paths and adds independently selectable S5–S8 optimizations: multiple channels, control/TX/RX warp specialization, shared-memory receive/expand fusion with vectorized copy and optional independent RX/scatter warps, source fusion, parallel stable layout, cached layout, CUDA Graph, optional FP8 wire compression, and NUMA relay. See [the implementation notes](docs/pcie-ep/advanced-implementation.md), [API.md](API.md), and the [staged plan](docs/pcie-ep/implementation-plan.md).
+The implementation has one native runtime with independently selectable capabilities: multiple channels, control/TX/RX warp specialization, shared-memory receive/expand fusion with vectorized copy and optional independent RX/scatter warps, source fusion, parallel stable layout, cached layout, CUDA Graph, optional FP8 wire compression, and NUMA relay. See [the implementation notes](docs/pcie-ep/advanced-implementation.md), [API.md](API.md), and the [staged plan](docs/pcie-ep/implementation-plan.md).
 
 The Python API follows DeepEP V2.5's `EPBuffer`, `EPHandle`, and `EventOverlap` structure and can borrow an existing PyTorch NCCL communicator. The dispatch payload path contains no NCCL, GPU peer mapping, peer copy, NVLink, or Gin operations. This is an independent package; the original DeepEP checkout is read-only reference material.
+
+The default configuration is C32, source fusion, warp specialization and pipelined receive expansion. Stage numbers 6/7/8 select capability gates on this same runtime; stages 1–5 are retired and rejected.
 
 ## Configuration and use
 
@@ -41,11 +43,11 @@ with HostStagedEPBuffer(
     # Expert kernels consume GPU expert_counts/expert_offsets and valid rows.
 ```
 
-`receive_expand_mode="pipelined"` uses three dedicated scatter warps in addition to the original eight. `"vectorized"` keeps the original RX roles and uses 16-byte shared→expert copies; `"scalar"` preserves the reference F2 algorithm and remains the default. Unique dispatch keeps its original path. See [F2 implementation](docs/pcie-ep/f2-receive-expand.md) and [the latest pipelined measurements](RESULTS_F2.md).
+`receive_expand_mode="pipelined"` uses three dedicated scatter warps in addition to the original eight. `"vectorized"` keeps the original RX roles and uses 16-byte shared→expert copies; `"scalar"` remains an explicitly selected diagnostic variant. `"pipelined"` is the default. Unique dispatch keeps its original path. See [F2 implementation](docs/pcie-ep/f2-receive-expand.md) and [the latest pipelined measurements](RESULTS_F2.md).
 
 `do_cpu_sync=False` is mandatory; `None` means False. Normal dispatch/replay does not read counts back to the CPU or wait for GPU completion. Initialization, explicit capture preparation, collective close, and `check_errors()` may synchronize and belong outside the steady path.
 
-S1–S4 retain two prepared output pools. Advanced paths prepare three by default, configurable with `output_pool_size`; output tensors and metadata remain protected while referenced. Pool exhaustion raises an explicit error. Consumer work must be enqueued before the next dispatch and registered through `EventOverlap.wait()` / `current_stream_wait()` so reuse waits for its stream tail. CPU submissions are serialized.
+The current runtime prepares three eager output pools by default, configurable with `output_pool_size`; output tensors and metadata remain protected while referenced. Pool exhaustion raises an explicit error. Consumer work must be enqueued before the next dispatch and registered through `EventOverlap.wait()` / `current_stream_wait()` so reuse waits for its stream tail. CPU submissions are serialized.
 
 For S6 caching, extract `cache = buffer.cache_layout(handle)` to retain only an immutable route plan, release old outputs, and call `buffer.dispatch(new_x, topk_weights=new_weights, handle=cache, do_expand=True)`. Routes, ownership and alignment must remain unchanged. Explicit Graph support uses `enable_graph=True`, `buffer.capture_dispatch(...)`, and `graph.replay()`; each buffer supports one fixed-address graph with a separate output pool. Graph outputs are overwritten on replay. Full contracts and examples are in API.md.
 
@@ -61,7 +63,7 @@ S7's `wire_dtype="fp8_e4m3"` is optional: external tensors stay BF16, remote pay
 
 The extension is one CUDA translation unit with implementation headers organized like DeepEP. It uses C++20 for CPU `atomic_ref` load/store handshakes. Tensor/PyObject pool ownership checks depend on the tested PyTorch C++ API; revalidate before changing PyTorch. See [code-style.md](docs/pcie-ep/code-style.md) and [REFACTOR.md](REFACTOR.md).
 
-`bash scripts/sync_remote.sh GPU_HOST /opt/pcie-ep` pushes sources without deleting remote-only files, excludes results/build caches, and verifies SHA-256 manifests. Machine-specific archives and logs are local-only under the ignored `results/` directory. See [publication scope](PUBLICATION.md).
+`bash scripts/sync_remote.sh GPU_HOST /opt/pcie-ep` pushes sources without deleting remote-only files, excludes results/build caches, and verifies SHA-256 manifests. New validation logs are local-only under the ignored `results/` directory; historical archives are kept outside the checkout. See [publication scope](PUBLICATION.md).
 
 ## Reproduction
 
@@ -72,17 +74,11 @@ bash scripts/validate_f2.sh all
 PCIE_EP_F2_RUN_ID=my_run bash scripts/benchmark_f2.sh all
 python3 benchmarks/report_latest.py --run-dir results/f2/runs/my_run
 
-# Preserved S5–S8 reference experiments:
-bash scripts/validate_s5_s8.sh
-bash scripts/benchmark_s5_s8.sh sweep
-PCIE_EP_CHANNELS=32 bash scripts/benchmark_s5_s8.sh main
-PCIE_EP_CHANNELS=32 PCIE_EP_RELAY_TUNING=1 bash scripts/benchmark_s5_s8.sh optional
-python benchmarks/report_advanced.py --baseline results/s5_s8/reference_s4.json
 ```
 
-Advanced validation includes CPU unit tests, independent distributed BF16/FP8 reference checks, cache/Graph and relay combinations, forced writer/reader delays, bounded-ring stress, full-payload T8192 checks, stream/pool/communicator/error lifetime tests, and profiler audits. The stress iteration count can be changed with `PCIE_EP_STRESS_ITERATIONS`; results record the actual count. The retained `scripts/validate_remote.sh` reproduces the S0–S4 refactor validation.
+Advanced validation includes CPU unit tests, independent distributed BF16/FP8 reference checks, cache/Graph and relay combinations, forced writer/reader delays, bounded-ring stress, full-payload T8192 checks, stream/pool/communicator/error lifetime tests, and profiler audits. The stress iteration count can be changed with `PCIE_EP_F2_STRESS_ITERATIONS`; results record the actual count. Retired stage 1–5 executables and historical report generators have been removed; see [cleanup scope](CLEANUP.md).
 
-The requested workload is DP8/EP8, 256 experts (32 consecutive experts per GPU), distinct top-k8, hidden 7168, BF16 input/output, and tokens per GPU 16/32/64/128/256/512/1024/2048/4096/8192. The deterministic route seed is 20261024. Main tables use BF16 wire; FP8 has a separate table.
+The requested workload is DP8/EP8, 256 experts (32 consecutive experts per GPU), distinct top-k8, hidden 7168, BF16 input/output, and tokens per GPU 16/32/64/128/256/512/1024/2048/4096/8192. The deterministic route seed is 20261024. The published table uses BF16 wire; FP8 remains a separately tested optional mode.
 
 ## Timing and bandwidth
 
@@ -110,4 +106,4 @@ The supported scope is one machine, one GPU/process, P≤16, top-k≤32, up to 3
 python3 benchmarks/report_latest.py
 ```
 
-Machine-specific raw logs, traces, native binaries, topology dumps and historical experiment archives are excluded from Git. They can be generated locally by the validation and benchmark scripts. The numerical results are an anonymous export of the completed GPU measurements; this publication did not rerun GPU experiments. Runtime and kernel source fingerprints are included in `benchmarks/data/f2_runtime_source_sha256.json`; scripts and documentation were generalized for publication.
+Machine-specific raw logs, traces, native binaries, topology dumps and historical experiment archives are excluded from Git. They can be generated locally by the validation and benchmark scripts. The numerical results are an anonymous export of the completed GPU measurements; this publication did not rerun GPU experiments. The retained measurements identify their original measured source in `benchmarks/data/f2_measured_runtime_source_sha256.json`. The current runtime was subsequently cleaned and revalidated; that historical fingerprint does not describe the cleaned source. See [cleanup scope](CLEANUP.md).

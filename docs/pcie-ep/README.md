@@ -1,6 +1,6 @@
 # PCIe Host-staged EP Dispatch 设计包
 
-设计日期：2026-10-23；实现更新：2026-10-25。S0–S4 基线和 S5–S8 可选路径均已落地，目标环境为 `<GPU_HOST>` 的八张 H20D；阶段验收、调参与全部指定 batch 的实际记录保存在 `results/s5_s8/`。原始 S4 数据继续保留。
+设计日期：2026-10-23；实现更新：2026-10-25。S0–S4 基线和 S5–S8 可选路径均已落地，目标环境为 `<GPU_HOST>` 的八张 H20D；阶段验收、调参与全部指定 batch 的实际记录保存在 `results/s5_s8/`。历史实验材料移出工作目录；当前源码不保留旧 Runtime。
 
 本设计以本地 `<DeepEP checkout>` 为接口与源码基线，commit：
 `b5a33eefda39485f438dc764695b71ba7b9249b6`（读取时工作区无变更）。
@@ -41,3 +41,5 @@ Kernel fusion 路线：S3 先融合收发与 ACK/credit 推进；S5 增加 contr
 NUMA relay 为显式可选模式：源端 ring 放在源 GPU 邻近 NUMA，后台 native CPU worker 将 payload 按需复制一份到每个目标 NUMA 的副本 ring，再由本地目标 GPU 共读。采用复制完成 ACK 与 GPU 消费 ACK 两级回收，不依赖两份 ring 自动缓存一致。该模式保持 `do_cpu_sync=False`，但稳态数据前进依赖 CPU worker；默认 direct 模式仍完全由 GPU 搬运。详见设计文档第 4.1–4.6 节及实现计划的 NUMA relay 子任务。
 
 核心边界：普通 device-scope atomic 不足以完成此协议；不使用 host 上跨 GPU 的共享引用计数。采用自然对齐的 system-scope acquire/release load/store，依次证明 payload 发布、读完成和 slot 回收。稳态 ring 协议采用无互斥锁握手，慢接收方仍会造成背压；初始化的 kernel shared-memory 属性另由进程级 mutex 保护，不进入 dispatch/replay。
+
+当前代码清理和兼容性变更见 [CLEANUP.md](../../CLEANUP.md)。

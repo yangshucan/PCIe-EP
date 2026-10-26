@@ -1,6 +1,10 @@
 #pragma once
 
-#include "host_staged.hpp"
+#include <ATen/cuda/CUDAContext.h>
+#include <c10/cuda/CUDAGuard.h>
+#include <array>
+
+#include "../kernels/host_staged/dispatch.cuh"
 #include "../comm/numa_relay.hpp"
 #include "../kernels/host_staged/advanced_layout.cuh"
 #include "../kernels/host_staged/advanced_dispatch.cuh"
@@ -19,8 +23,6 @@ struct AdvancedLayout {
     int tokens = -1;
     torch::Tensor route_plan;
     torch::Tensor rank_expert_counts;
-    torch::Tensor remote_token_indices;
-    torch::Tensor num_remote_tokens;
     torch::Tensor channel_remote_indices;
     torch::Tensor channel_num_remote_tokens;
     torch::Tensor channel_rank_counts;
@@ -31,8 +33,6 @@ struct AdvancedLayout {
         const auto i32 = options.dtype(torch::kInt32), i64 = options.dtype(torch::kInt64);
         route_plan = torch::empty({int64_t(align_up(size_t(shared.base.num_max_tokens_per_rank) * sizeof(TokenMetadata), 8) / 8)}, i64);
         rank_expert_counts = torch::empty({shared.base.num_ranks + shared.base.num_experts}, i32);
-        remote_token_indices = torch::empty({shared.base.num_max_tokens_per_rank}, i32);
-        num_remote_tokens = torch::empty({1}, i32);
         channel_remote_indices = torch::empty({shared.channels, shared.base.num_max_tokens_per_rank}, i32);
         channel_num_remote_tokens = torch::empty({shared.channels}, i32);
         channel_rank_counts = torch::empty({shared.channels, shared.base.num_ranks}, i32);
@@ -343,7 +343,7 @@ private:
 
     void validate(const Tensor& x, const Tensor& idx, const py::object& weight, int stage, int alignment, Tensor& weights) const {
         TORCH_CHECK(!closed_ && !closing_, "advanced runtime is closed or closing");
-        TORCH_CHECK(stage == config_.stage && stage >= 5 && stage <= 8, "advanced stage differs from prepared configuration");
+        TORCH_CHECK(stage == config_.stage && stage >= 6 && stage <= 8, "advanced stage differs from prepared configuration");
         TORCH_CHECK(x.is_cuda() && x.get_device() == device_ && x.scalar_type() == torch::kBFloat16 && x.dim() == 2 &&
             x.size(1) == shared_.base.num_hidden && x.size(0) <= shared_.base.num_max_tokens_per_rank && x.is_contiguous(), "bad advanced input");
         TORCH_CHECK(idx.is_cuda() && idx.get_device() == device_ && idx.scalar_type() == torch::kInt64 &&
@@ -392,8 +392,6 @@ private:
         auto& base = state.base;
         base.route_plan = static_cast<TokenMetadata*>(plan.route_plan.data_ptr());
         base.rank_expert_counts = plan.rank_expert_counts.data_ptr<int>();
-        base.remote_token_indices = plan.remote_token_indices.data_ptr<int>();
-        base.num_remote_tokens = plan.num_remote_tokens.data_ptr<int>();
         base.source_offsets = output.source_offsets.data_ptr<int>();
         base.source_expert_prefix = output.source_expert_prefix.data_ptr<int>();
         base.expert_counts = output.expert_counts.data_ptr<int>();
@@ -436,21 +434,14 @@ private:
                          int alignment, bool expand, bool zero_padding, bool reuse) const {
         const auto stream = at::cuda::getCurrentCUDAStream(device_);
         advanced_begin_epoch<<<1, 1, 0, stream>>>(state);
-        if (config_.stage >= 6 || config_.source_fusion) {
-            if (!reuse) {
-                if (tokens) {
-                    const int route_blocks = (tokens + kNumThreads - 1) / kNumThreads;
-                    advanced_route_flags<<<route_blocks, kNumThreads, 0, stream>>>(state, tokens);
-                }
-                advanced_stable_ordinals<<<shared_.base.num_ranks + shared_.base.num_experts, kNumThreads, 0, stream>>>(state, tokens);
+        if (!reuse) {
+            if (tokens) {
+                const int route_blocks = (tokens + kNumThreads - 1) / kNumThreads;
+                advanced_route_flags<<<route_blocks, kNumThreads, 0, stream>>>(state, tokens);
             }
-            advanced_prepare_channels_parallel<<<config_.channels, kNumThreads, 0, stream>>>(state, tokens, reuse);
-        } else {
-            if (!reuse) {
-                advanced_compute_route_layout<<<1, 1, 0, stream>>>(state, tokens);
-            }
-            advanced_prepare_channels<<<1, 1, 0, stream>>>(state, tokens, reuse);
+            advanced_stable_ordinals<<<shared_.base.num_ranks + shared_.base.num_experts, kNumThreads, 0, stream>>>(state, tokens);
         }
+        advanced_prepare_channels_parallel<<<config_.channels, kNumThreads, 0, stream>>>(state, tokens, reuse);
         publish_counts<<<1, kNumThreads, 0, stream>>>(state.base);
         advanced_compute_receive_prefixes<<<1, 1, 0, stream>>>(state, alignment);
         if (config_.payload_dtype && tokens) {

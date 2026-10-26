@@ -1,5 +1,5 @@
 {
-  "scope": "CUDA/C++ runtime and Python package; execution and publication hashes match. Publication changes to scripts and documentation are outside this scope.",
+  "scope": "Historical fingerprint of the runtime measured for the included timing dataset, before the 2026-10-26 cleanup. Refer to Git commit 6a927b59ed2bd8f87ea9d89b4f479493ce4077e7. This does not identify the current cleaned source.",
   "sha256": {
     "csrc/buffers/advanced.hpp": "16dc659a78e2ea65747f2e2d8f48f0ffb55669930a686bc23e34e4b6b97ee4ab",
     "csrc/buffers/host_staged.hpp": "55759978c80e30631bd13600dd5b45a50cf9ffde5f8ebf33fb234620888cd9ac",

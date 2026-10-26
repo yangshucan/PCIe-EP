@@ -1,5 +1,7 @@
 # PCIe EP Dispatch：从最小实现到性能优化
 
+> 2026-10-26：本文的阶段拆分保留为设计推导，不代表仓库仍保存多套历史实现。当前只有一个 native runtime，S1–S4 Runtime、整批传输、S5 串行布局均已移除；默认使用 C32/pipelined F2。当前支持与清理范围见 [CLEANUP.md](../../CLEANUP.md) 和 [API.md](../../API.md)。
+
 本文件规定开发顺序；[design.md](./design.md) 保留最终协议与优化细节。阶段编号统一使用 S0–S8，替代此前按组件划分的 M0–M6；F1/F2/F3 与 R0–R3 仅作为 fusion/relay 子任务名。S0–S4 已完成目标机器测试，原始结果保留在 [RESULTS.md](../../RESULTS_F2.md)。2026-10-25 已按阶段落地 S5–S8 的独立路径；实际配置、协议实现与测量口径见 [advanced-implementation.md](./advanced-implementation.md)，新验收和性能数据保存在 `results/s5_s8/`。
 
 S4 的 thread 0 控制、全 CTA 顺序搬运保持为参考。S5 新增真正的 control/metadata、TX、RX warp 并发流水；S6 并行稳定布局、F3、缓存和 Graph 分别开关；S7 使用可选 FP8 wire；S8 增加 CPU relay。阶段开关与原有路径并存。

@@ -331,12 +331,14 @@ def main():
     )
     args = parser.parse_args()
     root = args.root.resolve()
-    output = (args.output or root / "results/s5_s8").resolve()
-    allowed_outputs = (root / "results/s5_s8", root / "results/f2")
-    if not any(output.is_relative_to(directory) for directory in allowed_outputs):
-        parser.error("Output must be inside results/s5_s8 or results/f2; historical audits are protected")
-    before_path = args.before or output / "nvlink_s5_s8_before.json"
-    after_path = args.after or output / "nvlink_s5_s8_after.json"
+    output = (args.output or root / "results/current/audit").resolve()
+    results_root = (root / "results").resolve()
+    if output == results_root or not output.is_relative_to(results_root):
+        parser.error("Output must be a run-specific directory inside results/")
+    if (output / "pcie_path_audit.json").exists():
+        parser.error("Refusing to overwrite an existing audit; choose a new output directory")
+    before_path = args.before or output / "nvlink_before.json"
+    after_path = args.after or output / "nvlink_after.json"
     manifest_path = args.manifest or output / "executed_source_manifest.json"
     if not args.allow_pending_counters and not all(path.exists() for path in (before_path, after_path, manifest_path)):
         parser.error("Formal audit requires before/after snapshots and executed_source_manifest.json")

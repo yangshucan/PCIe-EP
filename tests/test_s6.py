@@ -116,8 +116,6 @@ class CachedLayoutTests(unittest.TestCase):
 class AdvancedConfigurationTests(unittest.TestCase):
     def test_features_have_explicit_stage_gates(self):
         for kwargs in (
-            {"stage": 5, "source_fusion": True},
-            {"stage": 5, "enable_graph": True},
             {"stage": 6, "wire_dtype": "fp8_e4m3"},
             {"stage": 7, "numa_mode": "relay"},
         ):
@@ -135,11 +133,11 @@ class AdvancedConfigurationTests(unittest.TestCase):
             enable_graph=True,
         )
 
-    def test_native_adapter_preserves_old_setup_signature(self):
+    def test_native_adapter_uses_current_collective_setup(self):
         extension = Mock()
-        config = HostStagedConfig(stage=5, channels=4, fuse_receive_expand=True)
+        config = HostStagedConfig(stage=6, channels=4, fuse_receive_expand=True)
         adapter = AdvancedExtensionAdapter(extension, config)
-        adapter.create_segments("dir", 8, 16, 7168, 8, 256, 256, 256, 5)
+        adapter.create_segments("dir", 8, 16, 7168, 8, 256, 256, 256, 6)
         extension.create_advanced_segments.assert_called_once_with(
             "dir",
             8,

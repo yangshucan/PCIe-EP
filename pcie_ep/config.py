@@ -13,8 +13,9 @@ class HostStagedConfig:
     Arguments:
         payload_slots: per-source payload ring capacity, independent of Tmax.
         descriptor_slots: per-source/per-destination notification capacity.
-        channels: independently owned ring channels; multiple channels need S5.
-        stage: S1/S2 select batch staging; S3+ select bounded payload rings.
+        channels: independently owned payload/descriptor ring channels.
+        stage: supported capability level, 6 (BF16), 7 (FP8), or 8 (relay).
+            All levels use the same current runtime; stages 1-5 are retired.
         timeout_ms: GPU-side protocol timeout, not a CPU completion wait.
         directory: optional parent directory for the per-buffer backing files.
         numa_mode: direct mapped reads, or S8 CPU relay to NUMA-local replicas.
@@ -23,14 +24,14 @@ class HostStagedConfig:
         fuse_receive_expand: scatter received payload directly to expert rows.
         receive_expand_mode: scalar preserves the original fused receive;
             vectorized and pipelined require S5+, receive fusion and warp
-            specialization. Unique dispatch automatically uses the old kernel.
+            specialization. Unique dispatch uses the current unique-output kernel.
         source_fusion: S6 source-side routing and payload publication fusion.
         wire_dtype: BF16 or S7 per-token scaled FP8 E4M3 transport for finite
             input. Nonzero scales have an FP32 normal-minimum floor. Input
             and output tensors remain BF16 in either mode.
         enable_graph: allocate an independent result pool for explicit S6
             capture_dispatch preparation and fixed-address replay.
-        output_pool_size: advanced eager result pools. S1-S4 retain two pools.
+        output_pool_size: number of preallocated eager result pools.
         replica_slots: bounded S8 payload capacity per NUMA replica channel.
         relay_workers_per_numa: S8 workers per source/target NUMA domain.
             Channels are partitioned between workers; at most channels workers.
@@ -40,15 +41,15 @@ class HostStagedConfig:
 
     payload_slots: int = 256
     descriptor_slots: int = 256
-    channels: int = 1
-    stage: int = 4
+    channels: int = 32
+    stage: int = 6
     timeout_ms: int = 30_000
     directory: Optional[str] = None
     numa_mode: str = "direct"
-    warp_specialization: bool = False
+    warp_specialization: bool = True
     pipeline_stages: int = 2
-    fuse_receive_expand: bool = False
-    source_fusion: bool = False
+    fuse_receive_expand: bool = True
+    source_fusion: bool = True
     wire_dtype: str = "bf16"
     replica_slots: int = 256
     enable_graph: bool = False
@@ -59,34 +60,23 @@ class HostStagedConfig:
     rx_delay_ns: int = 0
     scatter_delay_ns: int = 0
     output_pool_size: int = 3
-    receive_expand_mode: str = "scalar"
+    receive_expand_mode: str = "pipelined"
 
     def __post_init__(self) -> None:
         for name in ("payload_slots", "descriptor_slots", "timeout_ms", "replica_slots"):
             if not isinstance(getattr(self, name), int) or getattr(self, name) < 1:
                 raise ValueError(f"{name} must be a positive integer")
-        if self.stage not in range(1, 9):
-            raise ValueError("stage must be between 1 and 8")
+        if self.stage not in (6, 7, 8):
+            raise ValueError("stages 1-5 are retired; stage must be 6, 7 or 8")
         if not isinstance(self.channels, int) or not 1 <= self.channels <= 32:
             raise ValueError("channels must be an integer in [1, 32]")
-        if self.stage < 5 and self.channels != 1:
-            raise NotImplementedError("Multiple channels are an S5 optimization")
         if self.pipeline_stages not in (2, 3):
             raise ValueError("pipeline_stages must be 2 or 3")
         if self.receive_expand_mode not in ("scalar", "vectorized", "pipelined"):
             raise ValueError("receive_expand_mode must be 'scalar', 'vectorized' or 'pipelined'")
         if self.receive_expand_mode != "scalar":
-            if self.stage < 5:
-                raise NotImplementedError("Vectorized and pipelined receive expansion require S5")
             if not self.fuse_receive_expand or not self.warp_specialization:
                 raise ValueError("Non-scalar receive expansion requires fuse_receive_expand and warp_specialization")
-        advanced_features = self.warp_specialization or self.fuse_receive_expand or self.pipeline_stages != 2
-        if self.stage < 5 and advanced_features:
-            raise NotImplementedError("Warp specialization, pipelines and receive fusion require S5")
-        if self.stage < 6 and self.source_fusion:
-            raise NotImplementedError("Source fusion requires S6")
-        if self.stage < 6 and self.enable_graph:
-            raise NotImplementedError("CUDA Graph requires S6")
         if self.wire_dtype not in ("bf16", "fp8_e4m3"):
             raise ValueError("wire_dtype must be 'bf16' or 'fp8_e4m3'")
         if self.stage < 7 and self.wire_dtype != "bf16":
@@ -110,10 +100,6 @@ class HostStagedConfig:
         for name in ("metadata_delay_ns", "tx_delay_ns", "rx_delay_ns", "scatter_delay_ns"):
             if not isinstance(getattr(self, name), int) or getattr(self, name) < 0:
                 raise ValueError(f"{name} must be a nonnegative integer")
-
-    @property
-    def advanced(self) -> bool:
-        return self.stage >= 5
 
     def native_options(self) -> dict:
         """Options agreed collectively before allocating advanced shared rings."""

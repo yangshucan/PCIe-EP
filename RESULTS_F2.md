@@ -44,3 +44,5 @@ python3 benchmarks/report_latest.py
 ```
 
 新实验完成后可运行 `python3 benchmarks/report_latest.py --run-dir results/f2/runs/RUN_ID`。详见[公开范围](PUBLICATION.md)。
+
+测量版本说明：上述数值来自清理前已完成的实验（Git commit `6a927b5`）。2026-10-26 的代码清理与回归不将这些历史数值冒充为新构建的重新测量，见 [CLEANUP.md](CLEANUP.md)。

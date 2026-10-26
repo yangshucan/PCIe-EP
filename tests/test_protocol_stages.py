@@ -19,7 +19,7 @@ from test_correctness import gather_cpu, make_inputs, verify_result
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--stage", type=int, choices=range(5, 9), default=5)
+    parser.add_argument("--stage", type=int, choices=(6, 7, 8), default=6)
     parser.add_argument("--numa-mode", choices=["direct", "relay"], default="direct")
     parser.add_argument("--hidden", type=int, default=7168)
     parser.add_argument("--delay-ns", type=int, default=100000)
@@ -84,7 +84,7 @@ def main():
         # Ample ring capacity isolates actual metadata/payload overlap from
         # descriptor or source-slot starvation in the safety runs above.
         config = HostStagedConfig(
-            stage=5, channels=1, payload_slots=128, descriptor_slots=128, warp_specialization=True, pipeline_stages=3
+            stage=6, channels=1, payload_slots=128, descriptor_slots=128, warp_specialization=True, pipeline_stages=3
         )
         with HostStagedEPBuffer(
             group=dist.group.WORLD,

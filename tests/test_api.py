@@ -121,23 +121,26 @@ class ModuleContractTests(unittest.TestCase):
 class ConfigTests(unittest.TestCase):
     def test_bounded_ring_defaults(self):
         config = HostStagedConfig()
-        self.assertEqual((config.payload_slots, config.descriptor_slots, config.stage), (256, 256, 4))
+        self.assertEqual((config.payload_slots, config.descriptor_slots, config.stage), (256, 256, 6))
 
     def test_invalid_capacity_rejected(self):
         for kwargs in ({"payload_slots": 0}, {"descriptor_slots": -1}, {"timeout_ms": 0}, {"stage": 9}):
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
                 HostStagedConfig(**kwargs)
 
-    def test_unimplemented_optimizations_rejected(self):
-        for kwargs in ({"channels": 2}, {"numa_mode": "relay"}):
-            with self.subTest(kwargs=kwargs), self.assertRaises(NotImplementedError):
-                HostStagedConfig(**kwargs)
+    def test_retired_runtime_stages_are_rejected(self):
+        for stage in range(1, 6):
+            with self.subTest(stage=stage), self.assertRaisesRegex(ValueError, "retired"):
+                HostStagedConfig(stage=stage)
+        config = HostStagedConfig()
+        self.assertEqual(config.channels, 32)
+        self.assertTrue(config.warp_specialization and config.fuse_receive_expand and config.source_fusion)
 
     def test_receive_expand_mode_default_and_native_options(self):
-        self.assertEqual(HostStagedConfig().receive_expand_mode, "scalar")
+        self.assertEqual(HostStagedConfig().receive_expand_mode, "pipelined")
         for mode in ("scalar", "vectorized", "pipelined"):
             config = HostStagedConfig(
-                stage=5, fuse_receive_expand=True, warp_specialization=True, receive_expand_mode=mode
+                stage=6, fuse_receive_expand=True, warp_specialization=True, receive_expand_mode=mode
             )
             self.assertEqual(config.native_options()["receive_expand_mode"], mode)
 
@@ -146,18 +149,16 @@ class ConfigTests(unittest.TestCase):
             HostStagedConfig(receive_expand_mode="unknown")
         for mode in ("vectorized", "pipelined"):
             with self.subTest(mode=mode):
-                with self.assertRaisesRegex(NotImplementedError, "S5"):
-                    HostStagedConfig(receive_expand_mode=mode)
-                for flags in ({}, {"fuse_receive_expand": True}, {"warp_specialization": True}):
+                for flags in ({"fuse_receive_expand": False}, {"warp_specialization": False}):
                     with self.subTest(flags=flags), self.assertRaisesRegex(ValueError, "requires"):
-                        HostStagedConfig(stage=5, receive_expand_mode=mode, **flags)
+                        HostStagedConfig(stage=6, receive_expand_mode=mode, **flags)
 
     def test_receive_expand_mode_test_argument_bridge(self):
         import argparse
         from advanced_options import add_transport_arguments, transport_options
 
         parser = argparse.ArgumentParser()
-        add_transport_arguments(parser, stage=5)
+        add_transport_arguments(parser, stage=6)
         args = parser.parse_args(
             ["--receive-expand-mode", "pipelined", "--fuse-receive-expand", "--warp-specialization"]
         )
@@ -167,7 +168,7 @@ class ConfigTests(unittest.TestCase):
     def test_receive_expand_mode_is_checked_collectively(self):
         from pcie_ep.comm import validate_group_configuration
 
-        config = HostStagedConfig(stage=5, fuse_receive_expand=True, warp_specialization=True)
+        config = HostStagedConfig(stage=6, fuse_receive_expand=True, warp_specialization=True)
 
         def gather(states, state, **kwargs):
             different = dict(state[-1])

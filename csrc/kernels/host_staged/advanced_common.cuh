@@ -45,7 +45,7 @@ inline AdvancedSharedMemoryLayout make_advanced_shared_memory_layout(
 ) {
     AdvancedSharedMemoryLayout result{};
     result.base = make_shared_memory_layout(num_ranks, num_max_tokens_per_rank, hidden,
-        topk, experts, payload_slots, descriptor_slots, 4);
+        topk, experts, payload_slots, descriptor_slots);
     result.channels = channels;
     result.stages = stages;
     result.num_numa_nodes = num_numa_nodes;

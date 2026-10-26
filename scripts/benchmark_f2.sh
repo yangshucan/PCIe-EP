@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Counterbalanced, sequential eight-GPU F2 benchmark; run on the remote host.
+# Two-round, sequential latest-pipelined eight-GPU benchmark; run on the remote host.
 # bash scripts/benchmark_f2.sh [all|round1|round2] [--dry-run]
 set -euo pipefail
 project_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
@@ -68,19 +68,11 @@ fi
 run_case() {
     local variant=$1
     local round=$2
-    local mode=scalar
-    local fusion=--fuse-receive-expand
-    case "$variant" in
-        scalar_f2) ;;
-        nof2) fusion=--no-fuse-receive-expand ;;
-        vectorized) mode=vectorized ;;
-        pipelined) mode=pipelined ;;
-    esac
     local output="$prefix/$round/dispatch_$variant"
     local command=(docker exec -e PYTHONPATH=/workspace -e NCCL_P2P_DISABLE=1 -e NCCL_IB_DISABLE=1
         -w /workspace "$container" torchrun --standalone --nproc-per-node=8 benchmarks/benchmark.py
         --stage 6 --channels 32 --payload-slots 256 --descriptor-slots 256 --replica-slots 256
-        --pipeline-stages 2 --warp-specialization --source-fusion "$fusion" --receive-expand-mode "$mode"
+        --pipeline-stages 2 --warp-specialization --source-fusion --fuse-receive-expand --receive-expand-mode pipelined
         --numa-mode direct --wire-dtype bf16 --execution-mode eager
         --experts 256 --topk 8 --hidden 7168 --expand --alignment 1 --seed 20261024
         --tokens 16 32 64 128 256 512 1024 2048 4096 8192 --warmup 5 --iterations 20
@@ -104,8 +96,7 @@ run_case() {
 
 for round in round1 round2; do
     if [[ $selection != all && $selection != "$round" ]]; then continue; fi
-    order=(scalar_f2 nof2 vectorized pipelined)
-    if [[ $round == round2 ]]; then order=(pipelined vectorized nof2 scalar_f2); fi
+    order=(pipelined)
     printf 'Suite %s: %s\n' "$round" "${order[*]}"
     if [[ $dry_run == 0 ]]; then
         if [[ -e "$run_dir/$round" ]]; then

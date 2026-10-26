@@ -34,108 +34,6 @@ __global__ void advanced_begin_epoch(AdvancedDeviceState state) {
     }
 }
 
-// Separate from begin_epoch so immutable cached plans and CUDA Graph replay
-// use the same GPU-owned monotonically increasing transport epoch.
-__global__ void advanced_compute_route_layout(AdvancedDeviceState state, int num_tokens) {
-    if (threadIdx.x || blockIdx.x || state.base.errors[kErrorCodeField])
-        return;
-    const int ranks = state.base.layout.num_ranks;
-    const int experts_per_rank = state.base.layout.num_experts / ranks;
-    for (int index = 0; index < ranks + state.base.layout.num_experts; ++index)
-        state.base.rank_expert_counts[index] = 0;
-    *state.base.num_remote_tokens = 0;
-    for (int token = 0; token < num_tokens; ++token) {
-        TokenMetadata metadata{};
-        metadata.token_index = token;
-        for (int rank = 0; rank < kNumMaxRanks; ++rank)
-            metadata.rank_ordinals[rank] = -1;
-        for (int branch = 0; branch < state.base.layout.num_topk; ++branch) {
-            const auto expert = state.topk_indices[token * state.base.layout.num_topk + branch];
-            bool invalid = expert < -1 || expert >= state.base.layout.num_experts;
-            for (int previous = 0; previous < branch; ++previous)
-                invalid |= expert >= 0 && expert == state.topk_indices[token * state.base.layout.num_topk + previous];
-            metadata.expert_indices[branch] = invalid ? -1 : int(expert);
-            metadata.expert_ordinals[branch] = -1;
-            // This value is never consumed by the advanced transport: current
-            // dispatch weights are read by control/local-copy, even for caches.
-            metadata.weights[branch] = 0;
-            if (invalid) {
-                advanced_record_error(state, kErrorInvalidExpertRouting);
-            } else if (expert >= 0) {
-                metadata.destination_mask |= 1ull << (expert / experts_per_rank);
-                metadata.expert_ordinals[branch] = state.base.rank_expert_counts[ranks + expert]++;
-            }
-        }
-        for (int rank = 0; rank < ranks; ++rank) {
-            if (metadata.destination_mask & (1ull << rank))
-                metadata.rank_ordinals[rank] = state.base.rank_expert_counts[rank]++;
-        }
-        state.base.route_plan[token] = metadata;
-        if (metadata.destination_mask & ~(1ull << state.base.local_rank))
-            state.base.remote_token_indices[(*state.base.num_remote_tokens)++] = token;
-    }
-    if (state.base.errors[kErrorCodeField])
-        store_release_system(signal_value_ptr(state.base.mapped_source_buffers[state.base.local_rank],
-            state.shared.channel_abort_offset), *state.base.epoch);
-}
-
-__global__ void advanced_prepare_channels(AdvancedDeviceState state, int num_tokens, bool reuse_layout) {
-    if (threadIdx.x || blockIdx.x)
-        return;
-    const int ranks = state.base.layout.num_ranks;
-    const auto epoch = *state.base.epoch;
-    const auto start = global_time_ns();
-    auto* own = state.base.mapped_source_buffers[state.base.local_rank];
-    if (state.base.errors[kErrorCodeField]) {
-        store_release_system(signal_value_ptr(own, state.shared.channel_abort_offset), epoch);
-        return;
-    }
-    if (epoch > 1) {
-        for (int rank = 0; rank < ranks; ++rank) {
-            if (rank == state.base.local_rank)
-                continue;
-            while (load_acquire_system(signal_value_ptr(own, state.base.layout.counts_consumed_offset, rank)) != epoch - 1) {
-                if (advanced_failed(state, start)) {
-                    advanced_record_error(state, kErrorCountsMailboxWait);
-                    store_release_system(signal_value_ptr(own, state.shared.channel_abort_offset), epoch);
-                    return;
-                }
-            }
-        }
-    }
-    if (!reuse_layout) {
-        for (int channel = 0; channel < state.channels; ++channel) {
-            state.channel_num_remote_tokens[channel] = 0;
-            for (int rank = 0; rank < ranks; ++rank)
-                state.channel_rank_counts[channel * ranks + rank] = 0;
-            for (int endpoint = 0; endpoint < state.shared.num_endpoints; ++endpoint)
-                state.channel_endpoint_counts[channel * state.shared.num_endpoints + endpoint] = 0;
-        }
-        for (int token = 0; token < num_tokens; ++token) {
-            const int channel = token % state.channels;
-            const auto rank_mask = state.base.route_plan[token].destination_mask;
-            for (int rank = 0; rank < ranks; ++rank)
-                if (rank_mask & (1ull << rank))
-                    state.channel_rank_counts[channel * ranks + rank]++;
-            const auto endpoints = advanced_endpoint_mask(state, rank_mask);
-            if (endpoints) {
-                const int ordinal = state.channel_num_remote_tokens[channel]++;
-                state.channel_remote_indices[channel * state.base.layout.num_max_tokens_per_rank + ordinal] = token;
-                for (int endpoint = 0; endpoint < state.shared.num_endpoints; ++endpoint)
-                    if (endpoints & (1ull << endpoint))
-                        state.channel_endpoint_counts[channel * state.shared.num_endpoints + endpoint]++;
-            }
-        }
-    }
-    auto* rank_counts = reinterpret_cast<int*>(own + state.shared.channel_counts_offset);
-    auto* endpoint_counts = reinterpret_cast<int*>(own + state.shared.endpoint_counts_offset);
-    for (int index = 0; index < state.channels * ranks; ++index)
-        rank_counts[index] = state.channel_rank_counts[index];
-    for (int index = 0; index < state.channels * state.shared.num_endpoints; ++index)
-        endpoint_counts[index] = state.channel_endpoint_counts[index];
-    __threadfence_system();
-}
-
 __global__ void advanced_compute_receive_prefixes(AdvancedDeviceState state, int alignment) {
     if (threadIdx.x || blockIdx.x || state.base.errors[kErrorCodeField])
         return;
@@ -262,8 +160,6 @@ __global__ void advanced_reduce_statistics(AdvancedDeviceState state) {
 // implementation, while preserving source-token order in every prefix scan.
 __global__ void advanced_route_flags(AdvancedDeviceState state, int num_tokens) {
     const int token = blockIdx.x * blockDim.x + threadIdx.x;
-    if (token == 0)
-        *state.base.num_remote_tokens = 0;
     if (token >= num_tokens || state.base.errors[kErrorCodeField])
         return;
     TokenMetadata metadata{};

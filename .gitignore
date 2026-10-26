@@ -8,8 +8,6 @@ build/
 
 # Local experiment outputs may contain machine and network identities.
 /results/
-/RESULTS.md
-/RESULTS_S5_S8.md
 .env
 .env.*
 *.pem

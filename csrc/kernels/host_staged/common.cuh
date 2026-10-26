@@ -87,22 +87,14 @@ struct alignas(kNumSignalAlignmentBytes) Descriptor {
     char padding[92];
 };
 
-// Offsets refer to one source's shared CPU segment. Preserve this field order
-// and the allocation order below: S1/S2 and S3/S4 share the same memory ABI.
+// Common count mailbox and dimensions for one source-owned CPU segment.
+// Payload rings and descriptors are allocated by AdvancedSharedMemoryLayout.
 struct SharedMemoryLayout {
     std::size_t size_bytes;
     std::size_t counts_ready_offset;
     std::size_t counts_consumed_offset;
-    std::size_t batch_ready_offset;
-    std::size_t batch_ack_offset;
     std::size_t abort_offset;
     std::size_t counts_offset;
-    std::size_t batch_metadata_offset;
-    std::size_t batch_payload_offset;
-    std::size_t ring_metadata_offset;
-    std::size_t ring_payload_offset;
-    std::size_t payload_ack_offset;
-    std::size_t descriptors_offset;
 
     int num_ranks;
     int num_max_tokens_per_rank;
@@ -131,8 +123,8 @@ static_assert(offsetof(Descriptor, payload_slot) == 24, "Descriptor payload slot
 static_assert(offsetof(Descriptor, token_index) == 28, "Descriptor token index moved");
 static_assert(offsetof(Descriptor, rank_ordinal) == 32, "Descriptor rank ordinal moved");
 static_assert(offsetof(Descriptor, padding) == 36, "Descriptor padding moved");
-static_assert(sizeof(SharedMemoryLayout) == 136 && alignof(SharedMemoryLayout) == 8, "Layout ABI changed");
-static_assert(offsetof(SharedMemoryLayout, num_ranks) == 104, "Layout dimensions moved");
+static_assert(sizeof(SharedMemoryLayout) == 72 && alignof(SharedMemoryLayout) == 8, "Layout ABI changed");
+static_assert(offsetof(SharedMemoryLayout, num_ranks) == 40, "Layout dimensions moved");
 
 inline std::size_t align_up(std::size_t value, std::size_t alignment = kNumSignalAlignmentBytes) {
     return (value + alignment - 1) / alignment * alignment;
@@ -140,7 +132,7 @@ inline std::size_t align_up(std::size_t value, std::size_t alignment = kNumSigna
 
 inline SharedMemoryLayout make_shared_memory_layout(
     int num_ranks, int num_max_tokens_per_rank, int num_hidden, int num_topk,
-    int num_experts, int num_payload_slots, int num_descriptor_slots, int stage
+    int num_experts, int num_payload_slots, int num_descriptor_slots
 ) {
     SharedMemoryLayout result{};
     result.num_ranks = num_ranks;
@@ -159,17 +151,8 @@ inline SharedMemoryLayout make_shared_memory_layout(
     };
     result.counts_ready_offset = reserve(sizeof(Signal));
     result.counts_consumed_offset = reserve(num_ranks * sizeof(Signal));
-    result.batch_ready_offset = reserve(sizeof(Signal));
-    result.batch_ack_offset = reserve(num_ranks * sizeof(Signal));
     result.abort_offset = reserve(sizeof(Signal));
     result.counts_offset = reserve((num_ranks + num_experts) * sizeof(int));
-    result.batch_metadata_offset = reserve(stage <= 2 ? num_max_tokens_per_rank * sizeof(TokenMetadata) : 0);
-    result.batch_payload_offset = reserve(
-        stage <= 2 ? std::size_t(num_max_tokens_per_rank) * num_hidden * kNumBf16Bytes : 0);
-    result.ring_metadata_offset = reserve(num_payload_slots * sizeof(TokenMetadata));
-    result.ring_payload_offset = reserve(std::size_t(num_payload_slots) * num_hidden * kNumBf16Bytes);
-    result.payload_ack_offset = reserve(std::size_t(num_payload_slots) * num_ranks * sizeof(Signal));
-    result.descriptors_offset = reserve(std::size_t(num_ranks) * num_descriptor_slots * sizeof(Descriptor));
     result.size_bytes = align_up(cursor, kNumSharedMemoryPageBytes);
     return result;
 }
@@ -181,8 +164,6 @@ struct DeviceState {
     char* mapped_source_buffers[kNumMaxRanks];
     TokenMetadata* route_plan;
     int* rank_expert_counts;
-    int* remote_token_indices;
-    int* num_remote_tokens;
     std::uint64_t* epoch;
 
     int* source_offsets;
@@ -206,7 +187,7 @@ struct DeviceState {
 };
 
 static_assert(std::is_standard_layout_v<DeviceState>, "Device state must remain a plain launch argument");
-static_assert(sizeof(DeviceState) == 440 && alignof(DeviceState) == 8, "Device launch ABI changed");
+static_assert(sizeof(DeviceState) == 360 && alignof(DeviceState) == 8, "Device launch ABI changed");
 
 __device__ inline std::uint64_t load_acquire_system(std::uint64_t* address) {
     return cuda::atomic_ref<std::uint64_t, cuda::thread_scope_system>(*address).load(cuda::memory_order_acquire);
