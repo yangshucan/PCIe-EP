@@ -70,6 +70,7 @@ class HostStagedEPHandle:
         self.stats = result["stats"]
         self.transport_timestamps_ns = result.get("transport_timestamps_ns")
         self.receive_expand_overlap = result.get("receive_expand_overlap")
+        self.prefix_tx_timestamps_ns = result.get("prefix_tx_timestamps_ns")
         self.expanded_count = result["expanded_count"]
         self.num_recv_tokens = self.unique_count
         self.num_expanded_tokens = self.expanded_count

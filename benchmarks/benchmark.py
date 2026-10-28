@@ -3,7 +3,9 @@
 Run with ``torchrun --standalone --nproc-per-node=8 benchmarks/benchmark.py``.
 Every reported latency is the maximum of per-rank CUDA-event durations. CPU
 validation, topology discovery, reductions, and event synchronization occur
-outside the timed intervals. Payload bandwidth excludes metadata and padding.
+outside the timed intervals. The primary bandwidth is per-GPU logical expert
+volume T*K*H*2 divided by full dispatch latency. Deduplicated traffic and host
+bus bandwidth remain separate diagnostics.
 """
 
 from __future__ import annotations
@@ -220,6 +222,7 @@ def benchmark_case(buffer, tokens, args, rank, world, device):
     wire_bytes = global_volume["remote_deliveries"] * bytes_per_token
     bus_bytes = host_write_bytes + wire_bytes
     mean_seconds = statistics.mean(elapsed_us) * 1e-6
+    logical_bytes_per_gpu = tokens * args.topk * args.hidden * 2
     stats = gather(read_statistics(result[3]))
     if all(isinstance(item, dict) and "raw" in item for item in stats):
         actual_writes = sum(int(item["raw"][0]) for item in stats)
@@ -258,6 +261,9 @@ def benchmark_case(buffer, tokens, args, rank, world, device):
         "measured_iterations": args.iterations,
         "seed": args.seed,
         **global_volume,
+        "element_bytes": 2,
+        "logical_bytes_per_gpu": logical_bytes_per_gpu,
+        "logical_GBps": logical_bytes_per_gpu / mean_seconds / 1e9,
         "host_write_bytes": host_write_bytes,
         "unique_wire_bytes": wire_bytes,
         "host_bus_payload_bytes": bus_bytes,
@@ -376,8 +382,22 @@ def collect_environment(args):
         "nvlink_payload_allowed": False,
         "seed": args.seed,
         "latency_definition": "max per-rank CUDA-event full dispatch duration; mean of iteration maxima",
-        "bandwidth_definition": "decimal GB/s; B=H*2 for BF16, H+4 for FP8+FP32 scale; unique_wire=F*B; GPU host payload=(U+F)*B; metadata/padding excluded; relay CPU read+write=2*R*B separately",
-        "transport_timing_note": "GPU globaltimer ns around transport; includes fused receive/expand work when enabled, excludes separately launched layout/scatter; null if unavailable",
+        "primary_bandwidth_field": "logical_GBps",
+        "bandwidth_definition": (
+            "logical_GBps=T*K*H*2/t/1e9; T=input tokens per GPU, K=top-k, "
+            "H=hidden elements, 2=BF16 input bytes, t=mean of iteration maximum-rank "
+            "full dispatch durations in seconds; no world-size factor or deduplication"
+        ),
+        "diagnostic_bandwidth_definition": (
+            "decimal GB/s; B=H*2 for BF16, H+4 for FP8+FP32 scale; "
+            "unique_wire=F*B; GPU host payload=(U+F)*B; metadata/padding excluded; "
+            "relay CPU read+write=2*R*B separately"
+        ),
+        "transport_timing_note": (
+            "GPU globaltimer ns around transport; specialized paths overlap receive-count/prefix preparation "
+            "with TX and include that work, plus fused receive/expand when enabled; excludes separately "
+            "launched source layout/local copies/scatter; null if unavailable"
+        ),
         "timing_note": (
             f"{args.execution_mode} submission; active GPU route/count publish/prefix are timed; "
             "CPU count readback, traffic accounting and CPU coordination are outside timing"
@@ -400,6 +420,8 @@ def write_results(output_path, metadata, rows):
         "latency_p50_us",
         "latency_p95_us",
         "latency_p99_us",
+        "logical_bytes_per_gpu",
+        "logical_GBps",
         "remote_source_tokens",
         "remote_deliveries",
         "host_write_bytes",
@@ -452,7 +474,8 @@ def main():
                     if rank == 0:
                         print(
                             f"T={tokens:5d}  mean={row['full_dispatch']['mean_us']:10.2f} us  "
-                            f"wire={row['unique_wire_GBps_aggregate']:8.3f} GB/s  "
+                            f"logical={row['logical_GBps']:8.3f} GB/s  "
+                            f"diagnostic-wire={row['unique_wire_GBps_aggregate']:8.3f} GB/s  "
                             f"host-bus={row['host_bus_payload_GBps_aggregate']:8.3f} GB/s",
                             flush=True,
                         )

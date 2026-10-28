@@ -2,7 +2,7 @@
 
 Run on the remote host, after the extension build and benchmark snapshots are
 complete. This collector only reads sources, the existing binary, hardware
-properties and saved counters; its writes stay in results/s5_s8 or results/f2. It never
+properties and saved counters; its writes stay in results/. It never
 imports pcie_ep._C, builds an extension, resets counters or changes links.
 """
 
@@ -106,6 +106,8 @@ def inspect_rmw(sources):
             r"atomicAdd\((?:rank_counts|endpoint_counts)\s*\+", text
         ):
             classification = "CTA shared rank/endpoint counters in parallel channel layout"
+        elif path.endswith("advanced_layout.cuh") and "owner.compare_exchange_strong(" in text:
+            classification = "Current GPU HBM output.receive_prefix_state: resident RX-warp election"
         elif path.endswith("buffers/advanced.hpp") and "next_owner_id_.fetch_add" in text:
             classification = "CPU-local native runtime owner-ID counter"
         elif path.endswith("comm/numa_relay.hpp") and re.search(r"flow\.\w+\.fetch_add", text):
@@ -473,7 +475,8 @@ def main():
             ),
             "mapped_alias_to_device_state": source_lines(cpp_sources, r"mapped_source_buffers"),
             "current_gpu_allocations_and_checks": source_lines(
-                cpp_sources, r"TensorOptions\(\).device|get_device\(\) == device_|errors = output.errors"
+                cpp_sources, r"TensorOptions\(\).device|get_device\(\) == device_|errors = output.errors|"
+                r"receive_prefix_state =|thread_scope_device>\(state.receive_prefix_state"
             ),
             "source_and_replica_payload_addresses": source_lines(
                 cpp_sources, r"source_payload_offset|replica_payload_offset|receive_payload\("
@@ -489,7 +492,7 @@ def main():
             "shared_counter_callers": source_lines(
                 cpp_sources, r"local_arrive\(|__shared__ int rank_counts|__shared__ int endpoint_counts"
             ),
-            "conclusion": "Mapped CPU flags use load/store only. Shared CTA counters, current-GPU error arbitration and CPU-local diagnostics may use RMW; these pointers are not mapped payload/flags.",
+            "conclusion": "Mapped CPU flags use load/store only. Shared CTA counters, current-GPU error/prefix-owner arbitration and CPU-local diagnostics may use RMW; these pointers are not mapped payload/flags.",
         },
         "python_review": {
             "imports": python_imports,

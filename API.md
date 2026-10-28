@@ -146,6 +146,9 @@ recv_x, recv_topk_idx, recv_topk_weights, handle, event
 | `stats` | GPU `[8]`，每轮清零。前三项为 source host payload 写 token 数 U、remote payload 读 token 数 F、逻辑目标 GPU 投递数。S5+ 的 `[3:8]` 依次是 metadata/payload 重叠事件、RX not-ready 探测、TX credit miss、TX local-stage miss、实际 endpoint descriptor 发布次数；这些是事件计数，不是停顿时间。S8 的 endpoint 可聚合多个目标 GPU，因此最后一项可少于 F。 |
 | `transport_timestamps_ns` | GPU `[2]`，底层 transport 区域的 `%globaltimer` 时间戳。与完整 dispatch 时延分别报告。 |
 | `receive_expand_overlap` | 新 F2 expanded 路径的 CUDA int64 `[channels,2]`：列 0 为保守 RX/scatter 任务交叠计数，列 1 为指定 scatter warp 的完成 ticket 水位。vectorized 为零，scalar/unique 为 None；不是时长或利用率，CPU 读取仅用于计时外诊断。 |
+| `prefix_tx_timestamps_ns` | CUDA int64 `[channels+1,2]`。行 0 为接收 prefix producer 开始/结束时间；行 `channel+1` 为该 channel 首次 TX payload 开始、以及全部 payload workers 和 metadata 写入完成的时间。无 remote payload 时对应 TX 行为零；homogeneous 不记录 TX 行。使用 GPU `%globaltimer`，仅用于计时外诊断。 |
+
+specialized 路径在 RX 控制 warp 中准备接收 prefixes，与 TX 并行；本地 token copy 随 transport 完成后执行，保持原输出行号和顺序。时间戳不保证每轮自然观测到重叠；首次 TX 完成早于 prefix 结束才是该轮的直接重叠证据。内部 `receive_prefix_state` 是每个输出池私有的 GPU claim/ready，不是 handle 字段；详细协议、缓存与 Graph 语义见 [接收计数与 TX 并行](docs/pcie-ep/prefix-tx-overlap.md)。
 
 `num_recv_tokens_per_expert_list` 始终为 None。下游 kernel 需要直接消费 GPU counts/offsets。`do_cpu_sync=None` 与 False 相同；显式 True 会报不支持。
 

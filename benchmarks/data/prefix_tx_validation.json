@@ -1,0 +1,382 @@
+{
+  "compiled_path_audit": {
+    "all_rmw_classified_local": true,
+    "counter_status": "passed",
+    "manifest_match": true,
+    "module_binary_match": true,
+    "no_peer_api": true,
+    "positive_requirements": {
+      "advanced_transport_compiled": true,
+      "cpp_20_actual_build_flags": true,
+      "cpu_relay_mapped_handshake_load_store": true,
+      "cuda_13_compiler": true,
+      "current_gpu_output_and_input_validation": true,
+      "eight_sm90_gpus_with_132_sms": true,
+      "gloo_control_group_enforced": true,
+      "mapped_aliases_bound_to_kernel_state": true,
+      "mapped_signals_only_acquire_load_release_store": true,
+      "registered_shared_cpu_backing": true,
+      "resource_usage_extracted": true,
+      "sm90_actual_build_flags": true,
+      "system_scope_instructions_present": true
+    },
+    "status": "passed"
+  },
+  "cpu_unit_tests": {
+    "api_cache_fp8": 54,
+    "report_tests": 14,
+    "status": "passed"
+  },
+  "exit_status": {
+    "all": 0,
+    "buffers": 0,
+    "consumer_lifetime": 0,
+    "correctness": 0,
+    "f2": 0,
+    "homogeneous": 0,
+    "large": 0,
+    "prefix_tx": 0,
+    "prefix_tx_strict": 0,
+    "profiler_eager": 0,
+    "profiler_graph_cached": 0,
+    "relay": 0,
+    "single_rank": 0,
+    "stress": 0,
+    "timeout": 0
+  },
+  "nvlink": {
+    "all_payload_deltas_zero": true,
+    "complete": true,
+    "counter_count": 288,
+    "monotonic": true,
+    "status": "passed"
+  },
+  "performance_round_nvlink": {
+    "baseline_round1": {
+      "all_payload_deltas_zero": true,
+      "complete": true,
+      "counter_count": 288,
+      "monotonic": true,
+      "status": "passed"
+    },
+    "baseline_round2": {
+      "all_payload_deltas_zero": true,
+      "complete": true,
+      "counter_count": 288,
+      "monotonic": true,
+      "status": "passed"
+    },
+    "optimized_round1": {
+      "all_payload_deltas_zero": true,
+      "complete": true,
+      "counter_count": 288,
+      "monotonic": true,
+      "status": "passed"
+    },
+    "optimized_round2": {
+      "all_payload_deltas_zero": true,
+      "complete": true,
+      "counter_count": 288,
+      "monotonic": true,
+      "status": "passed"
+    }
+  },
+  "profiler": {
+    "profiler_eager": {
+      "audit_passed": 8,
+      "audit_reports": 8,
+      "cpu_sync_calls": 0,
+      "device_to_host_memcopies": 0,
+      "hidden": 7168,
+      "includes_zero_padding_kernel": true,
+      "iterations_per_rank": 5,
+      "kernel_events_per_rank": [
+        45,
+        45,
+        45,
+        45,
+        45,
+        45,
+        45,
+        45
+      ],
+      "kernels": {
+        "advanced_begin_epoch": {
+          "events": 40,
+          "median_gpu_us": 4.752
+        },
+        "advanced_copy_local_tokens": {
+          "events": 40,
+          "median_gpu_us": 9.728
+        },
+        "advanced_prepare_channels_parallel": {
+          "events": 40,
+          "median_gpu_us": 75.6485
+        },
+        "advanced_reduce_statistics": {
+          "events": 40,
+          "median_gpu_us": 16.832
+        },
+        "advanced_route_flags": {
+          "events": 40,
+          "median_gpu_us": 5.055
+        },
+        "advanced_stable_ordinals": {
+          "events": 40,
+          "median_gpu_us": 2.1115000000000004
+        },
+        "advanced_transport_pipelined": {
+          "events": 40,
+          "median_gpu_us": 546.625
+        },
+        "advanced_zero_padding": {
+          "events": 40,
+          "median_gpu_us": 1.152
+        },
+        "publish_counts": {
+          "events": 40,
+          "median_gpu_us": 14.752
+        }
+      },
+      "kernels_per_dispatch": 9,
+      "note": "Audit trace only, not formal benchmark. Older audit traces used H256; do not compare cross-configuration full-dispatch durations.",
+      "scalar_readback_ops": 0,
+      "tokens_per_gpu": 17,
+      "world_size": 8
+    },
+    "profiler_graph_cached": {
+      "audit_passed": 8,
+      "audit_reports": 8,
+      "cpu_sync_calls": 0,
+      "device_to_host_memcopies": 0,
+      "hidden": 7168,
+      "includes_zero_padding_kernel": true,
+      "iterations_per_rank": 5,
+      "kernel_events_per_rank": [
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35,
+        35
+      ],
+      "kernels": {
+        "advanced_begin_epoch": {
+          "events": 40,
+          "median_gpu_us": 4.64
+        },
+        "advanced_copy_local_tokens": {
+          "events": 40,
+          "median_gpu_us": 9.7275
+        },
+        "advanced_prepare_channels_parallel": {
+          "events": 40,
+          "median_gpu_us": 77.72800000000001
+        },
+        "advanced_reduce_statistics": {
+          "events": 40,
+          "median_gpu_us": 16.256
+        },
+        "advanced_transport_pipelined": {
+          "events": 40,
+          "median_gpu_us": 790.4960000000001
+        },
+        "advanced_zero_padding": {
+          "events": 40,
+          "median_gpu_us": 1.12
+        },
+        "publish_counts": {
+          "events": 40,
+          "median_gpu_us": 12.944
+        }
+      },
+      "kernels_per_dispatch": 7,
+      "note": "Audit trace only, not formal benchmark. Older audit traces used H256; do not compare cross-configuration full-dispatch durations.",
+      "scalar_readback_ops": 0,
+      "tokens_per_gpu": 17,
+      "world_size": 8
+    }
+  },
+  "same_configuration_begin_epoch_profile": {
+    "baseline": {
+      "median_gpu_us": 331.728,
+      "samples": 40
+    },
+    "configuration": {
+      "channels": 32,
+      "descriptor_slots": 3,
+      "hidden": 7168,
+      "includes_padding": true,
+      "payload_slots": 2,
+      "purpose": "Profiler diagnostic only; not the formal ten-batch benchmark.",
+      "tokens_per_gpu": 17,
+      "world_size": 8
+    },
+    "optimized": {
+      "median_gpu_us": 4.752,
+      "samples": 40
+    }
+  },
+  "status": "passed",
+  "strict_overlap": {
+    "active_per_rank": [
+      12,
+      40,
+      40,
+      40,
+      40,
+      40,
+      40,
+      40
+    ],
+    "counts": {
+      "active_channel_observations": 1452,
+      "active_rank_observations": 292,
+      "cases": 58,
+      "cases_with_proof": 40,
+      "cases_with_proof_on_all_8_ranks": 12,
+      "cases_with_tx": 40,
+      "no_tx_rank_observations": 172,
+      "proved_channel_observations": 1452,
+      "proved_rank_observations": 292,
+      "rank_observations": 464,
+      "stored_proof_mismatches": 0
+    },
+    "diagnostic_prefix_delay_ns": 20000000,
+    "execution": {
+      "cache_prepare": {
+        "active_ranks": 42,
+        "proved_ranks": 42
+      },
+      "cached": {
+        "active_ranks": 84,
+        "proved_ranks": 84
+      },
+      "eager": {
+        "active_ranks": 138,
+        "proved_ranks": 138
+      },
+      "graph": {
+        "active_ranks": 14,
+        "proved_ranks": 14
+      },
+      "graph_cached": {
+        "active_ranks": 14,
+        "proved_ranks": 14
+      }
+    },
+    "hidden": 7168,
+    "note": "Injected prefix delay establishes concurrency, not a performance benchmark; no cross-GPU clock comparison",
+    "proof_condition": "Within each rank/channel: prefix_start < first_payload_done < prefix_end; payload completion includes metadata and all TX warps",
+    "proof_per_rank": [
+      12,
+      40,
+      40,
+      40,
+      40,
+      40,
+      40,
+      40
+    ],
+    "status": "passed",
+    "world_size": 8
+  },
+  "tests": {
+    "buffers": {
+      "passed": 4,
+      "records": 4,
+      "world_size": 8
+    },
+    "consumer_lifetime": {
+      "passed": 2,
+      "records": 2,
+      "world_size": 2
+    },
+    "correctness": {
+      "passed": 12,
+      "records": 12,
+      "world_size": 8
+    },
+    "f2": {
+      "passed": 212,
+      "records": 212,
+      "suites": {
+        "alignment_one": 4,
+        "combination_eager": 32,
+        "combinations": 96,
+        "correctness": 32,
+        "delays": 32,
+        "odd_hidden": 4,
+        "overlap": 4,
+        "unique_fallback": 8
+      },
+      "world_size": 8
+    },
+    "homogeneous": {
+      "passed": 11,
+      "records": 11,
+      "world_size": 2
+    },
+    "large": {
+      "hidden": 7168,
+      "modes": {
+        "expanded": 8,
+        "unique": 8
+      },
+      "passed": 16,
+      "payload_bytes_checked_total": 12494970880,
+      "payload_elements_checked_total": 6247485440,
+      "records": 16,
+      "tokens_per_rank": 8192,
+      "world_size": 8
+    },
+    "prefix_tx": {
+      "passed": 58,
+      "records": 58,
+      "world_size": 8
+    },
+    "prefix_tx_strict": {
+      "passed": 58,
+      "records": 58,
+      "world_size": 8
+    },
+    "relay": {
+      "passed": 18,
+      "records": 18,
+      "world_size": 8
+    },
+    "single_rank": {
+      "passed": 11,
+      "records": 11,
+      "world_size": 1
+    },
+    "stress": {
+      "dispatches_per_rank": 3000,
+      "hidden": 7168,
+      "passed": 3,
+      "records": 3,
+      "ring_capacities": [
+        {
+          "descriptor_slots": 2,
+          "payload_slots": 1
+        },
+        {
+          "descriptor_slots": 1,
+          "payload_slots": 2
+        },
+        {
+          "descriptor_slots": 2,
+          "payload_slots": 3
+        }
+      ],
+      "world_size": 8
+    },
+    "timeout": {
+      "passed": 2,
+      "records": 2,
+      "world_size": 2
+    }
+  }
+}

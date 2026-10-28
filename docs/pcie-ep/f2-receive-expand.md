@@ -1,5 +1,7 @@
 # F2 接收与专家展开：向量化与独立 warp 流水
 
+2026-10-28：当前运行时进一步实现[并行初始化与prefix/TX重叠](prefix-tx-overlap.md)，最新重新测量见 [RESULTS_PREFIX_TX.md](../../RESULTS_PREFIX_TX.md)。下文保留F2接收/展开实现说明。
+
 本文记录现有 F2 的两个增量实现；最新 pipelined 实现的十个 batch 时延和按 `T*K*H*b/t` 重算的带宽见 [F2 实测报告](../../RESULTS_F2.md)，匿名时延数据在 `benchmarks/data/`；完整机器相关数据仅保留在本地 `results/f2/`。阶段编号仍为 S5–S8；F2 是接收/展开融合子功能，两者不是同一层级。
 
 ## API 与选择规则

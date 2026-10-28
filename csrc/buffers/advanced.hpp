@@ -71,6 +71,8 @@ class AdvancedRuntime {
         Tensor channel_statistics;
         Tensor channel_timestamps_ns;
         Tensor receive_expand_overlap;
+        Tensor receive_prefix_state;
+        Tensor prefix_tx_timestamps_ns;
     };
 
     AdvancedConfig config_;
@@ -159,6 +161,10 @@ public:
     void set_relay_delay_ns(std::uint64_t delay_ns) {
         TORCH_CHECK(relay_, "NUMA relay is not enabled");
         relay_->set_delay(delay_ns);
+    }
+
+    void set_test_prefix_delay_ns(std::uint64_t delay_ns) {
+        config_.prefix_delay_ns = delay_ns;
     }
 
     py::dict relay_diagnostics() const {
@@ -304,6 +310,8 @@ private:
             output.channel_statistics = torch::empty({config_.channels, kNumStatisticsFields}, i64);
             output.channel_timestamps_ns = torch::empty({config_.channels, kNumTransportTimestampFields}, i64);
             output.receive_expand_overlap = torch::empty({config_.channels, 2}, i64);
+            output.receive_prefix_state = torch::empty({2}, i64);
+            output.prefix_tx_timestamps_ns = torch::empty({config_.channels + 1, 2}, i64);
         }
         for (int i = 0; i < config_.output_pool_size; ++i) {
             plans_.push_back(std::make_shared<AdvancedLayout>(owner_id_, device_, shared_));
@@ -356,7 +364,7 @@ private:
         }
     }
 
-    static std::array<Tensor*, 20> output_tensors(OutputSet& output) {
+    static std::array<Tensor*, 21> output_tensors(OutputSet& output) {
         return {&output.unique_payload, &output.unique_topk_indices,
                 &output.unique_topk_weights, &output.unique_source_metadata,
                 &output.expanded_payload, &output.expanded_expert_indices,
@@ -366,7 +374,7 @@ private:
                 &output.expert_offsets, &output.source_offsets,
                 &output.errors, &output.statistics, &output.transport_timestamps_ns,
                 &output.channel_statistics, &output.channel_timestamps_ns,
-                &output.receive_expand_overlap};
+                &output.receive_expand_overlap, &output.prefix_tx_timestamps_ns};
     }
     OutputSet& select_output(bool graph_pool) {
         if (graph_pool) {
@@ -415,6 +423,8 @@ private:
         state.channel_rank_counts = plan.channel_rank_counts.data_ptr<int>();
         state.channel_endpoint_counts = plan.channel_endpoint_counts.data_ptr<int>();
         state.expected_receive_counts = output.expected_receive_counts.data_ptr<int>();
+        state.receive_prefix_state = reinterpret_cast<std::uint64_t*>(output.receive_prefix_state.data_ptr<int64_t>());
+        state.prefix_tx_timestamps_ns = output.prefix_tx_timestamps_ns.data_ptr<int64_t>();
         state.expanded_payload = static_cast<std::uint16_t*>(output.expanded_payload.data_ptr());
         state.expanded_expert_indices = output.expanded_expert_indices.data_ptr<int64_t>();
         state.expanded_weights = output.expanded_weights.data_ptr<float>();
@@ -427,13 +437,14 @@ private:
         state.tx_delay_ns = config_.tx_delay_ns;
         state.rx_delay_ns = config_.rx_delay_ns;
         state.scatter_delay_ns = config_.scatter_delay_ns;
+        state.prefix_delay_ns = config_.prefix_delay_ns;
         return state;
     }
 
     void launch_dispatch(const AdvancedDeviceState& state, OutputSet& output, int tokens,
                          int alignment, bool expand, bool zero_padding, bool reuse) const {
         const auto stream = at::cuda::getCurrentCUDAStream(device_);
-        advanced_begin_epoch<<<1, 1, 0, stream>>>(state);
+        advanced_begin_epoch<<<1, kNumThreads, 0, stream>>>(state);
         if (!reuse) {
             if (tokens) {
                 const int route_blocks = (tokens + kNumThreads - 1) / kNumThreads;
@@ -443,30 +454,35 @@ private:
         }
         advanced_prepare_channels_parallel<<<config_.channels, kNumThreads, 0, stream>>>(state, tokens, reuse);
         publish_counts<<<1, kNumThreads, 0, stream>>>(state.base);
-        advanced_compute_receive_prefixes<<<1, 1, 0, stream>>>(state, alignment);
+        // Specialized TX starts before receive counts/prefixes are ready.
+        // The homogeneous CTA still prepares prefixes before entering its
+        // full-CTA loop, which has no independent RX-control warp.
+        if (!state.warp_specialization)
+            advanced_compute_receive_prefixes<<<1, 32, 0, stream>>>(state, alignment);
         if (config_.payload_dtype && tokens) {
             quantize_transport_payload<<<tokens, kNumThreads, 0, stream>>>(
                 state.input_payload, static_cast<std::uint8_t*>(fp8_payload_.data_ptr()),
                 fp8_scales_.data_ptr<float>(), tokens, shared_.base.num_hidden);
         }
-        if (tokens) {
-            advanced_copy_local_tokens<<<tokens, kNumThreads, 0, stream>>>(state, tokens);
-        }
         const size_t dynamic_bytes = advanced_shared_memory_bytes(shared_.base.num_hidden, config_.stages, state.fuse_receive_expand);
         if (state.fuse_receive_expand &&
             config_.receive_expand_mode == AdvancedConfig::ReceiveExpandMode::Vectorized) {
             advanced_transport_vectorized<<<config_.channels, kNumThreads, dynamic_bytes, stream>>>(
-                state, output.receive_expand_overlap.data_ptr<int64_t>());
+                state, alignment, output.receive_expand_overlap.data_ptr<int64_t>());
         } else if (state.fuse_receive_expand &&
                    config_.receive_expand_mode == AdvancedConfig::ReceiveExpandMode::Pipelined) {
             constexpr int kNumPipelinedReceiveThreads = 352;
             advanced_transport_pipelined<<<config_.channels, kNumPipelinedReceiveThreads, dynamic_bytes, stream>>>(
-                state, output.receive_expand_overlap.data_ptr<int64_t>());
+                state, alignment, output.receive_expand_overlap.data_ptr<int64_t>());
         } else {
             // Unique mode has no receive tile, irrespective of the configured
             // expanded mode. Scalar retains the original fused implementation.
-            advanced_transport<<<config_.channels, kNumThreads, dynamic_bytes, stream>>>(state);
+            advanced_transport<<<config_.channels, kNumThreads, dynamic_bytes, stream>>>(state, alignment);
         }
+        // Receive prefixes now become ready inside transport. Local and
+        // remote source rows are disjoint; preserve their original ordering.
+        if (tokens)
+            advanced_copy_local_tokens<<<tokens, kNumThreads, 0, stream>>>(state, tokens);
         if (expand && !state.fuse_receive_expand) {
             scatter_expert_inputs<<<std::max(shared_.base.num_ranks * shared_.base.num_max_tokens_per_rank,
                 shared_.base.num_experts / shared_.base.num_ranks), kNumThreads, 0, stream>>>(
@@ -497,6 +513,7 @@ private:
         result["transport_timestamps_ns"] = output.transport_timestamps_ns;
         result["channel_stats"] = output.channel_statistics;
         result["channel_timestamps_ns"] = output.channel_timestamps_ns;
+        result["prefix_tx_timestamps_ns"] = output.prefix_tx_timestamps_ns;
         return result;
     }
 };

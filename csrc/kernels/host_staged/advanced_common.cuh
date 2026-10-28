@@ -8,6 +8,7 @@ namespace pcie_ep::host_staged {
 constexpr int kNumMaxNumaNodes = 8;
 constexpr int kNumMaxEndpoints = kNumMaxRanks + kNumMaxNumaNodes;
 constexpr int kNumMaxLocalStages = 3;
+constexpr std::uint64_t kReceivePrefixFailed = ~std::uint64_t(0);
 
 // Source endpoints are either a destination GPU or P + destination NUMA node.
 // The latter has a CPU relay owner. All mapped signals remain single-writer.
@@ -104,6 +105,10 @@ struct AdvancedDeviceState {
     int* channel_rank_counts;
     int* channel_endpoint_counts;
     int* expected_receive_counts;
+    // Per-output, device-local claim and generation-valued READY. Never RMW
+    // mapped host memory, and never share these between live buffers.
+    std::uint64_t* receive_prefix_state;
+    std::int64_t* prefix_tx_timestamps_ns;
     std::uint16_t* expanded_payload;
     std::int64_t* expanded_expert_indices;
     float* expanded_weights;
@@ -115,6 +120,7 @@ struct AdvancedDeviceState {
     std::uint64_t tx_delay_ns;
     std::uint64_t rx_delay_ns;
     std::uint64_t scatter_delay_ns;
+    std::uint64_t prefix_delay_ns;
 };
 
 __device__ inline int local_load(int* address) {

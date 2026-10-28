@@ -236,6 +236,8 @@ __device__ void advanced_tx_control(AdvancedDeviceState state, AdvancedLocalQueu
                 if (published < prepared) {
                     auto& stage = queues.tx[published % state.stages];
                     if (local_load(&stage.workers_done) == 3 && local_load(&stage.metadata_done)) {
+                        if (!published)
+                            state.prefix_tx_timestamps_ns[(channel + 1) * 2 + 1] = global_time_ns();
                         for (int endpoint = 0; endpoint < state.shared.num_endpoints; ++endpoint) {
                             if (stage.endpoints & (1ull << endpoint)) {
                                 auto* descriptor = source_descriptor(state, state.base.local_rank, channel,
@@ -323,7 +325,19 @@ __device__ void advanced_tx_control(AdvancedDeviceState state, AdvancedLocalQueu
     }
 }
 
-__device__ void advanced_rx_control(AdvancedDeviceState state, AdvancedLocalQueues& queues, int channel, int lane) {
+__device__ void advanced_rx_control(
+    AdvancedDeviceState state, AdvancedLocalQueues& queues, int channel, int alignment, int lane
+) {
+    // Only RX depends on receive counts and output prefixes. The elected,
+    // already resident RX warp prepares them while all TX roles progress.
+    if (!advanced_prepare_receive_prefixes(state, alignment, lane)) {
+        if (!lane) {
+            local_store(&queues.abort, 1);
+            local_store(&queues.rx_finished, 1);
+        }
+        // TX-control retains sole ownership of this channel's mapped abort.
+        return;
+    }
     int consumed[kNumMaxRanks] = {};
     int issued = 0, completed = 0, next_source = 0, rounds = 0;
     int expected = 0;
@@ -433,6 +447,8 @@ __device__ void advanced_tx_worker(AdvancedDeviceState state, AdvancedLocalQueue
             // propagates the leader's acquire to every stage-reading lane.
             __syncwarp();
             const int hidden = state.base.layout.num_hidden;
+            if (!ticket && !warp && !lane)
+                state.prefix_tx_timestamps_ns[(channel + 1) * 2] = global_time_ns();
             const int units = state.payload_dtype ? (hidden % 16 ? hidden : hidden / 16) :
                 (hidden % 8 ? hidden : hidden / 8);
             if (warp * 32 + lane == min(95, units - 1))
@@ -676,7 +692,7 @@ __device__ void advanced_homogeneous(
     }
 }
 
-__global__ void advanced_transport(AdvancedDeviceState state) {
+__global__ void advanced_transport(AdvancedDeviceState state, int alignment) {
     extern __shared__ __align__(16) unsigned char storage[];
     auto& queues = *reinterpret_cast<AdvancedLocalQueues*>(storage);
     auto* tiles = reinterpret_cast<std::uint16_t*>(storage + kNumAdvancedQueueBytes);
@@ -705,7 +721,7 @@ __global__ void advanced_transport(AdvancedDeviceState state) {
     else if (warp == 0)
         advanced_tx_control(state, queues, channel, lane);
     else if (warp == 1)
-        advanced_rx_control(state, queues, channel, lane);
+        advanced_rx_control(state, queues, channel, alignment, lane);
     else if (warp < 5)
         advanced_tx_worker(state, queues, channel, warp - 2, lane);
     else

@@ -12,6 +12,7 @@ if (( $# )) || [[ ! $selection =~ ^(all|round1|round2)$ ]]; then
     exit 2
 fi
 container=${PCIE_EP_CONTAINER:-pcie-ep}
+workspace=${PCIE_EP_WORKSPACE:-/workspace}
 run_id=${PCIE_EP_F2_RUN_ID:-f2_$(date -u +%Y%m%dT%H%M%SZ)_$$}
 if [[ ! $run_id =~ ^[A-Za-z0-9_-]+$ ]]; then
     printf 'PCIE_EP_F2_RUN_ID may contain only letters, digits, underscore and hyphen.\n' >&2
@@ -58,7 +59,7 @@ if [[ $dry_run == 0 ]]; then
     mkdir -p "$run_dir"
     trap finish EXIT
     python3 "$project_dir/scripts/source_manifest.py" > "$run_dir/host_source_manifest.json"
-    docker exec -w /workspace "$container" python scripts/source_manifest.py > "$run_dir/container_source_manifest.json"
+    docker exec -w "$workspace" "$container" python scripts/source_manifest.py > "$run_dir/container_source_manifest.json"
     if ! cmp -s "$run_dir/host_source_manifest.json" "$run_dir/container_source_manifest.json"; then
         printf 'Source mismatch: /workspace must mount this synchronized checkout.\n' >&2
         exit 1
@@ -69,8 +70,11 @@ run_case() {
     local variant=$1
     local round=$2
     local output="$prefix/$round/dispatch_$variant"
-    local command=(docker exec -e PYTHONPATH=/workspace -e NCCL_P2P_DISABLE=1 -e NCCL_IB_DISABLE=1
-        -w /workspace "$container" torchrun --standalone --nproc-per-node=8 benchmarks/benchmark.py
+    local command=(docker exec -e "PYTHONPATH=$workspace" -e NCCL_P2P_DISABLE=1 -e NCCL_IB_DISABLE=1)
+    if [[ -n ${PCIE_EP_TORCH_EXTENSIONS_DIR:-} ]]; then
+        command+=(-e "TORCH_EXTENSIONS_DIR=$PCIE_EP_TORCH_EXTENSIONS_DIR")
+    fi
+    command+=(-w "$workspace" "$container" torchrun --standalone --nproc-per-node=8 benchmarks/benchmark.py
         --stage 6 --channels 32 --payload-slots 256 --descriptor-slots 256 --replica-slots 256
         --pipeline-stages 2 --warp-specialization --source-fusion --fuse-receive-expand --receive-expand-mode pipelined
         --numa-mode direct --wire-dtype bf16 --execution-mode eager

@@ -7,17 +7,43 @@
 namespace pcie_ep::host_staged {
 
 __global__ void advanced_begin_epoch(AdvancedDeviceState state) {
-    if (threadIdx.x || blockIdx.x)
+    if (blockIdx.x)
         return;
-    for (int index = 0; index < kNumErrorFields; ++index)
+    for (int index = threadIdx.x; index < kNumErrorFields; index += blockDim.x)
         state.base.errors[index] = 0;
-    for (int index = 0; index < kNumStatisticsFields; ++index)
+    for (int index = threadIdx.x; index < kNumStatisticsFields; index += blockDim.x)
         state.base.statistics[index] = 0;
-    for (int index = 0; index < state.channels * kNumStatisticsFields; ++index)
+    for (int index = threadIdx.x; index < state.channels * kNumStatisticsFields; index += blockDim.x)
         state.channel_statistics[index] = 0;
-    for (int index = 0; index < state.channels * 2; ++index)
+    for (int index = threadIdx.x; index < state.channels * kNumTransportTimestampFields; index += blockDim.x)
         state.channel_timestamps_ns[index] = 0;
-    state.base.transport_timestamps_ns[0] = state.base.transport_timestamps_ns[1] = 0;
+    for (int index = threadIdx.x; index < kNumTransportTimestampFields; index += blockDim.x)
+        state.base.transport_timestamps_ns[index] = 0;
+    for (int index = threadIdx.x; index < 2; index += blockDim.x)
+        state.receive_prefix_state[index] = 0;
+    for (int index = threadIdx.x; index < (state.channels + 1) * 2; index += blockDim.x)
+        state.prefix_tx_timestamps_ns[index] = 0;
+    // Finish clearing diagnostics before the leader can record a new failure.
+    __syncthreads();
+
+    // Abort signals are terminal, including Graph replay. Only diagnostics are
+    // reset above; mapped signals retain their original single-writer owners.
+    const int flags_per_rank = 1 + state.channels +
+        (state.numa_mode ? state.channels * state.num_numa_nodes : 0);
+    bool aborted = false;
+    for (int index = threadIdx.x; index < state.base.layout.num_ranks * flags_per_rank; index += blockDim.x) {
+        auto* segment = state.base.mapped_source_buffers[index / flags_per_rank];
+        const int flag = index % flags_per_rank;
+        auto* signal = flag == 0 ? signal_value_ptr(segment, state.base.layout.abort_offset) :
+            flag <= state.channels ? signal_value_ptr(segment, state.shared.channel_abort_offset, flag - 1) :
+            signal_value_ptr(segment, state.shared.relay_failed_offset, flag - 1 - state.channels);
+        if (load_acquire_system(signal))
+            aborted = true;
+    }
+    const bool any_abort = __syncthreads_or(aborted);
+    if (threadIdx.x)
+        return;
+
     ++*state.base.epoch;
     if (*state.base.epoch >= 0x100000000ull) {
         advanced_record_error(state, kErrorEpochExhausted);
@@ -25,57 +51,125 @@ __global__ void advanced_begin_epoch(AdvancedDeviceState state) {
             state.shared.channel_abort_offset), *state.base.epoch);
         return;
     }
-    // Abort is terminal for this runtime, including Graph replay: resetting
-    // the output diagnostics must never revive an already failed protocol.
-    if (advanced_any_abort(state)) {
+    if (any_abort) {
         advanced_record_error(state, kErrorRuntimeAlreadyAborted);
         store_release_system(signal_value_ptr(state.base.mapped_source_buffers[state.base.local_rank],
             state.shared.channel_abort_offset), *state.base.epoch);
     }
 }
 
-__global__ void advanced_compute_receive_prefixes(AdvancedDeviceState state, int alignment) {
-    if (threadIdx.x || blockIdx.x || state.base.errors[kErrorCodeField])
-        return;
+// One resident RX-control warp owns all mailbox reads, including channel
+// counts. ACK a source only after every lane has captured its count data;
+// otherwise the source could overwrite the mailbox for the next epoch.
+__device__ bool advanced_compute_receive_prefixes_warp(AdvancedDeviceState state, int alignment, int lane) {
     auto& base = state.base;
     const int ranks = base.layout.num_ranks;
     const int experts_per_rank = base.layout.num_experts / ranks;
     const auto epoch = *base.epoch;
     const auto start = global_time_ns();
-    base.source_offsets[0] = 0;
-    for (int expert = 0; expert < experts_per_rank; ++expert)
+    if (!lane) {
+        state.prefix_tx_timestamps_ns[0] = start;
+        test_delay(state.prefix_delay_ns);
+        base.source_offsets[0] = 0;
+    }
+    for (int expert = lane; expert < experts_per_rank; expert += 32)
         base.expert_counts[expert] = 0;
+    __syncwarp();
     for (int source = 0; source < ranks; ++source) {
         auto* segment = base.mapped_source_buffers[source];
-        while (load_acquire_system(signal_value_ptr(segment, base.layout.counts_ready_offset)) != epoch) {
-            if (advanced_failed(state, start)) {
-                advanced_record_error(state, kErrorCountsReadyWait);
-                store_release_system(signal_value_ptr(base.mapped_source_buffers[base.local_rank],
-                    state.shared.channel_abort_offset), epoch);
-                return;
+        int failed = 0;
+        if (!lane) {
+            while (load_acquire_system(signal_value_ptr(segment, base.layout.counts_ready_offset)) != epoch) {
+                if (advanced_failed(state, start)) {
+                    advanced_record_error(state, kErrorCountsReadyWait);
+                    failed = 1;
+                    break;
+                }
+                __nanosleep(32);
             }
         }
+        if (__shfl_sync(0xffffffffu, failed, 0))
+            return false;
+        __syncwarp();  // Leader's system acquire -> all mailbox readers.
         auto* counts = reinterpret_cast<int*>(segment + base.layout.counts_offset);
         auto* channel_counts = reinterpret_cast<int*>(segment + state.shared.channel_counts_offset);
-        base.source_offsets[source + 1] = base.source_offsets[source] + counts[base.local_rank];
-        for (int expert = 0; expert < experts_per_rank; ++expert) {
+        if (!lane)
+            base.source_offsets[source + 1] = base.source_offsets[source] + counts[base.local_rank];
+        for (int expert = lane; expert < experts_per_rank; expert += 32) {
             base.source_expert_prefix[source * experts_per_rank + expert] = base.expert_counts[expert];
             base.expert_counts[expert] += counts[ranks + base.local_rank * experts_per_rank + expert];
         }
-        for (int channel = 0; channel < state.channels; ++channel)
+        for (int channel = lane; channel < state.channels; channel += 32)
             state.expected_receive_counts[channel * ranks + source] = channel_counts[channel * ranks + base.local_rank];
-        if (source != base.local_rank)
+        __threadfence_system();
+        __syncwarp();
+        if (!lane && source != base.local_rank)
             store_release_system(signal_value_ptr(segment, base.layout.counts_consumed_offset, base.local_rank), epoch);
     }
-    base.expert_offsets[0] = 0;
-    *base.expanded_count = 0;
-    for (int expert = 0; expert < experts_per_rank; ++expert) {
-        base.expert_offsets[expert + 1] = base.expert_offsets[expert] +
-            ((base.expert_counts[expert] + alignment - 1) / alignment) * alignment;
-        *base.expanded_count += base.expert_counts[expert];
-        base.expert_prefix[expert] = base.expert_offsets[expert] + base.expert_counts[expert];
+    __syncwarp();
+    if (!lane) {
+        base.expert_offsets[0] = 0;
+        *base.expanded_count = 0;
+        for (int expert = 0; expert < experts_per_rank; ++expert) {
+            base.expert_offsets[expert + 1] = base.expert_offsets[expert] +
+                ((base.expert_counts[expert] + alignment - 1) / alignment) * alignment;
+            *base.expanded_count += base.expert_counts[expert];
+            base.expert_prefix[expert] = base.expert_offsets[expert] + base.expert_counts[expert];
+        }
+        *base.unique_count = base.source_offsets[ranks];
     }
-    *base.unique_count = base.source_offsets[ranks];
+    return true;
+}
+
+__device__ bool advanced_prepare_receive_prefixes(AdvancedDeviceState state, int alignment, int lane) {
+    const auto epoch = *state.base.epoch;
+    auto owner = cuda::atomic_ref<std::uint64_t, cuda::thread_scope_device>(state.receive_prefix_state[0]);
+    auto ready = cuda::atomic_ref<std::uint64_t, cuda::thread_scope_device>(state.receive_prefix_state[1]);
+    int claimed = 0;
+    if (!lane) {
+        std::uint64_t expected = 0;
+        claimed = owner.compare_exchange_strong(expected, epoch, cuda::memory_order_acq_rel);
+    }
+    if (__shfl_sync(0xffffffffu, claimed, 0)) {
+        const bool success = advanced_compute_receive_prefixes_warp(state, alignment, lane);
+        // Every lane publishes its GPU count/prefix writes before READY.
+        __threadfence();
+        __syncwarp();
+        if (!lane) {
+            state.prefix_tx_timestamps_ns[1] = global_time_ns();
+            ready.store(success ? epoch : kReceivePrefixFailed, cuda::memory_order_release);
+        }
+    }
+    int success = 0;
+    if (!lane) {
+        while (true) {
+            const auto value = ready.load(cuda::memory_order_acquire);
+            if (value == epoch) {
+                success = 1;
+                break;
+            }
+            if (value == kReceivePrefixFailed ||
+                cuda::atomic_ref<std::int64_t, cuda::thread_scope_device>(state.base.errors[kErrorCodeField])
+                    .load(cuda::memory_order_acquire))
+                break;
+            // The elected producer is already resident and owns timeout
+            // checks. Waiters only read device-local state, not all peers.
+            __nanosleep(32);
+        }
+    }
+    success = __shfl_sync(0xffffffffu, success, 0);
+    __syncwarp();  // READY acquire -> all prefix-reading lanes.
+    return success;
+}
+
+// The homogeneous transport has no independent RX-control warp. Keep a
+// standalone preparation path, using the same count and prefix algorithm.
+__global__ void advanced_compute_receive_prefixes(AdvancedDeviceState state, int alignment) {
+    if (blockIdx.x || state.base.errors[kErrorCodeField])
+        return;
+    if (!advanced_prepare_receive_prefixes(state, alignment, threadIdx.x) && !threadIdx.x)
+        store_release_system(signal_value_ptr(state.base.mapped_source_buffers[state.base.local_rank],
+            state.shared.channel_abort_offset), *state.base.epoch);
 }
 
 __device__ inline void advanced_store_expanded_metadata(
@@ -156,8 +250,8 @@ __global__ void advanced_reduce_statistics(AdvancedDeviceState state) {
     state.base.transport_timestamps_ns[1] = end;
 }
 
-// Optional S6 layout. It retains the serial kernels above as the reference
-// implementation, while preserving source-token order in every prefix scan.
+// Parallel route preparation preserves source-token order in each rank
+// and expert prefix scan.
 __global__ void advanced_route_flags(AdvancedDeviceState state, int num_tokens) {
     const int token = blockIdx.x * blockDim.x + threadIdx.x;
     if (token >= num_tokens || state.base.errors[kErrorCodeField])

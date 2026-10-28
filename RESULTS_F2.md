@@ -1,6 +1,8 @@
-# 最新流水 F2：通信时延与带宽
+# 历史流水 F2：通信时延与带宽
 
-2026-10-25，8 张 H20D。仅列最新 `receive_expand_mode="pipelined"` 的结果。
+最新构建的重新测量及基线对比见 [RESULTS_PREFIX_TX.md](RESULTS_PREFIX_TX.md)。以下保留原始F2实验供溯源。
+
+2026-10-25，8 张 H20D。仅列当时的 `receive_expand_mode="pipelined"` 的结果。
 沿用已完成的两轮 CUDA-event 测量，按修正后的公式重算带宽，没有重跑 GPU 实验。
 
 ## 计算口径

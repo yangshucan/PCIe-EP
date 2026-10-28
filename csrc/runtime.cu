@@ -21,6 +21,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, extension) {
         .def("pool_debug", &AdvancedRuntime::pool_debug)
         .def("relay_diagnostics", &AdvancedRuntime::relay_diagnostics)
         .def("set_test_delays", &AdvancedRuntime::set_test_delays)
+        .def("set_test_prefix_delay_ns", &AdvancedRuntime::set_test_prefix_delay_ns)
         .def("set_relay_delay_ns", &AdvancedRuntime::set_relay_delay_ns)
         .def("close", &AdvancedRuntime::close);
 }

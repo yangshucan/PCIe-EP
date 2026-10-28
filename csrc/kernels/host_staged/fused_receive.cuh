@@ -247,7 +247,7 @@ __device__ void fused_receive_consumer(
 // Host selection requires specialization + expert expansion. Unique receive
 // and scalar-reference requests continue to launch the original kernel.
 __global__ void advanced_transport_vectorized(
-    AdvancedDeviceState state, std::int64_t* receive_expand_overlap
+    AdvancedDeviceState state, int alignment, std::int64_t* receive_expand_overlap
 ) {
     extern __shared__ __align__(16) unsigned char storage[];
     auto& queues = *reinterpret_cast<AdvancedLocalQueues*>(storage);
@@ -260,7 +260,7 @@ __global__ void advanced_transport_vectorized(
     if (warp == 0)
         advanced_tx_control(state, queues, channel, lane);
     else if (warp == 1)
-        advanced_rx_control(state, queues, channel, lane);
+        advanced_rx_control(state, queues, channel, alignment, lane);
     else if (warp < 5)
         advanced_tx_worker(state, queues, channel, warp - 2, lane);
     else
@@ -271,7 +271,7 @@ __global__ void advanced_transport_vectorized(
 }
 
 __global__ void advanced_transport_pipelined(
-    AdvancedDeviceState state, std::int64_t* receive_expand_overlap
+    AdvancedDeviceState state, int alignment, std::int64_t* receive_expand_overlap
 ) {
     extern __shared__ __align__(16) unsigned char storage[];
     auto& queues = *reinterpret_cast<AdvancedLocalQueues*>(storage);
@@ -284,7 +284,7 @@ __global__ void advanced_transport_pipelined(
     if (warp == 0)
         advanced_tx_control(state, queues, channel, lane);
     else if (warp == 1)
-        advanced_rx_control(state, queues, channel, lane);
+        advanced_rx_control(state, queues, channel, alignment, lane);
     else if (warp < 5)
         advanced_tx_worker(state, queues, channel, warp - 2, lane);
     else if (warp < 8)

@@ -43,3 +43,5 @@ NUMA relay 为显式可选模式：源端 ring 放在源 GPU 邻近 NUMA，后�
 核心边界：普通 device-scope atomic 不足以完成此协议；不使用 host 上跨 GPU 的共享引用计数。采用自然对齐的 system-scope acquire/release load/store，依次证明 payload 发布、读完成和 slot 回收。稳态 ring 协议采用无互斥锁握手，慢接收方仍会造成背压；初始化的 kernel shared-memory 属性另由进程级 mutex 保护，不进入 dispatch/replay。
 
 当前代码清理和兼容性变更见 [CLEANUP.md](../../CLEANUP.md)。
+
+- [Prefix/TX overlap and parallel initialization](prefix-tx-overlap.md): GPU ownership, mailbox lifetime, output ordering and diagnostics.

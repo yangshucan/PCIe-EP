@@ -38,6 +38,7 @@ struct AdvancedConfig {
     std::uint64_t tx_delay_ns = 0;
     std::uint64_t rx_delay_ns = 0;
     std::uint64_t scatter_delay_ns = 0;
+    std::uint64_t prefix_delay_ns = 0;
     std::uint64_t relay_delay_ns = 0;
     std::vector<int> rank_numa_nodes;
     std::vector<int> physical_numa_nodes;
