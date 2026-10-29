@@ -1,0 +1,20 @@
+{
+  "pytorch": "2.13.0+cu130",
+  "cuda": "13.0",
+  "nccl": [
+    2,
+    29,
+    7
+  ],
+  "numpy": "2.3.5",
+  "driver": "580.105.08",
+  "extensions": {
+    "pcie_ep_cuda": "a4f04ef90ecc14cb083f404a42935c6c8349f226e83908a9b82438c40d75f232",
+    "pcie_ep_nccl_expand": "2597c3012728738b05394be22381c0eea2b51ec2a28bb380c105c9a7a5bc2ef7"
+  },
+  "fingerprint_collected": "After both valid experiments; same shared extension cache and frozen source path",
+  "gpu_model": "NVIDIA H20D",
+  "gpu_count": 8,
+  "pcie_link": "Gen5 x16",
+  "numa_nodes": 2
+}

@@ -1,0 +1,542 @@
+{
+  "schema_version": 1,
+  "world_size": 8,
+  "experts": 256,
+  "topk": 8,
+  "hidden": 7168,
+  "seed": 20261024,
+  "cpu_reference_cases": 24,
+  "cuda_initialized": false,
+  "routes": [
+    {
+      "tokens_per_gpu": 16,
+      "per_rank": [
+        {
+          "rank": 0,
+          "routes_sha256": "ac0f0888745f799d8fbd2b684eaa84765c45481dbfcc3bfd31ab38953ee066f4",
+          "weights_sha256": "820773c31e7b35d8594e717226c2b1f185bd551161249c0dd1c632292c5392c4"
+        },
+        {
+          "rank": 1,
+          "routes_sha256": "c2f90ed9a9634e8b1e789a6d4939009599f933295a86dfd9f11c80a95e837ffc",
+          "weights_sha256": "d991c8d532ffc4f244ba07b5a138d731eb45f6d5b4c3751eb5548e3c0d2bd4c8"
+        },
+        {
+          "rank": 2,
+          "routes_sha256": "65c7a457ae1b60e40c7d466ccdf83d9bf8d759fc6057b809b840a6bc26f2d6ab",
+          "weights_sha256": "27119a4af1c6561af8098125d676a9025a7670f741190f8cd4033e2ac4a1ade5"
+        },
+        {
+          "rank": 3,
+          "routes_sha256": "1a01bb7dbbce62b89b3390e8ab83b2ef8f35afe3f37cec2cd4cd9e62f32ae357",
+          "weights_sha256": "5568e7c3a12735eca7151d86ef80ceb6c7e8fb272753c41ca0cea1d7509325ff"
+        },
+        {
+          "rank": 4,
+          "routes_sha256": "29a5a18deb484e9357754651b6ab04b29ca383a13cee3c1825a57bc07f8aa324",
+          "weights_sha256": "d26d570ebc2832307fb836b269be1e33d6c4094b775e437e90f64915b8782f26"
+        },
+        {
+          "rank": 5,
+          "routes_sha256": "369c6cfc751c6e9050c32f77339a5bf1ccd468bfb837bbf20d1b1db03bc23b41",
+          "weights_sha256": "0f197c5d2b14385386e37318d7e7150888f596f84d4292092ce7c4eb140d2ec7"
+        },
+        {
+          "rank": 6,
+          "routes_sha256": "afb6253bbe01ab7bf816e5f0450d9b08481ff6b6a7b5f9592e7568b55e6d5cba",
+          "weights_sha256": "f61fbfca3ce40cca124ead7123d7bd2c68e1b0f0a088a60b640a9440be46a2b2"
+        },
+        {
+          "rank": 7,
+          "routes_sha256": "8a3130ea726fa004c96c68911c564a50f1b77aa6fa08a72e76a45f10ab9a9529",
+          "weights_sha256": "ab6102dfa8b428caca96d3eb96d09c2b45791fee4e92341303544781cc037c27"
+        }
+      ],
+      "global_routes_sha256": "456349abc989ed1e68b6f74539c676c8f8e3ee76c8693f415dc0c02372850e09",
+      "route_volume": {
+        "remote_source_tokens": 128,
+        "remote_deliveries": 588,
+        "remote_expert_branches": 902,
+        "relay_token_copies": 128
+      },
+      "remote_delivery_fraction_of_allgather": 0.65625
+    },
+    {
+      "tokens_per_gpu": 32,
+      "per_rank": [
+        {
+          "rank": 0,
+          "routes_sha256": "85567479acc4ddbab614c985ad966fe69e154bdfa5f95132e2872bc19967c987",
+          "weights_sha256": "6d45bd818b216c9b86adfa270ce7cd54280b67d0d7c2a7e66be0c7bfdd34072d"
+        },
+        {
+          "rank": 1,
+          "routes_sha256": "005b9ed1a7bd04cfc677ba0212c6ca84b330fed7e09f47728dc344b290f33715",
+          "weights_sha256": "b3c0304004a46c486a7209d03c54c9baf9bfde3bd156e85caf53e22165c526fa"
+        },
+        {
+          "rank": 2,
+          "routes_sha256": "fabc6fb8300b32560453c3bf2cf74da2a19f4f18630a6a58d315e361936fd8aa",
+          "weights_sha256": "2f4016ea88d21c2df068ec86642cd25457bb4d7ae380c5bfcf801b5a517df750"
+        },
+        {
+          "rank": 3,
+          "routes_sha256": "22e7e36a01d2f8561ae7a8bdb95ac059fa35dd0b0b427e8954a7112d8919f27f",
+          "weights_sha256": "71bfb13897e7bc765c3ee35d0725e5458605eadfbe085570b0f085e5b7ecc163"
+        },
+        {
+          "rank": 4,
+          "routes_sha256": "b5b43f11c688f8d3a3c8b62f03021e194a62836a4810d3d28ea999f51bf5d02c",
+          "weights_sha256": "22e0117667b8f883a328ee0e49c116e7b2eedc31cad877f35266498386e7a560"
+        },
+        {
+          "rank": 5,
+          "routes_sha256": "3bbaaf827bf40b4254e030ea190b8a9ac797a945df4ca318faef927cbdd65b8c",
+          "weights_sha256": "fd8b81cb8f2e85ac7f94bc0fd625c5da5537534bf869f8acd2e5cb99fe3b4ea6"
+        },
+        {
+          "rank": 6,
+          "routes_sha256": "890ae53aecb06b04a472a61e5e036abc041efed96e2d2037a641da0ecdf3f6a9",
+          "weights_sha256": "740148dd04adf7b1b6e72bae0a5f4b5bb057918088f59fd30a98b018677fc6d5"
+        },
+        {
+          "rank": 7,
+          "routes_sha256": "5ad4ebdc7c5a36cbcf4b8a49a9e3de44d6fbad9f9bf3357653fdf306dcc0c218",
+          "weights_sha256": "378f55206d1612c5e390907eee7a57c12dcf84b60afdceb5f0f1feaa8ca72b06"
+        }
+      ],
+      "global_routes_sha256": "198c819033232e1f7047e234684983040c662480217aba3e6d2cf1611a0fb68c",
+      "route_volume": {
+        "remote_source_tokens": 256,
+        "remote_deliveries": 1189,
+        "remote_expert_branches": 1791,
+        "relay_token_copies": 255
+      },
+      "remote_delivery_fraction_of_allgather": 0.6635044642857143
+    },
+    {
+      "tokens_per_gpu": 64,
+      "per_rank": [
+        {
+          "rank": 0,
+          "routes_sha256": "672e68bfeab0dcb2356da1ceb27a1517fa231f4674875eba37261af81da5f2c6",
+          "weights_sha256": "c7eda083fcb3872e342f1e12cbb31d61ccb868fd568ca263f8c87f9b9c81722b"
+        },
+        {
+          "rank": 1,
+          "routes_sha256": "a96ea7a00ff08367abf702bfbdca76a7b04cd1e6a6333d234c3350300e533a64",
+          "weights_sha256": "f622aefc922daed48fabfbe191491e8598199590c7b1a9890a733f14cee22b35"
+        },
+        {
+          "rank": 2,
+          "routes_sha256": "2ce4614168b545380e046e1286cdea7712fa10f8e8c830247a9758fd723e1623",
+          "weights_sha256": "81cff531a1c9fd8cf76ebb0d9adca525725285583661251fbfc2989fad5d54b9"
+        },
+        {
+          "rank": 3,
+          "routes_sha256": "2cf860300ff2881a7abb61e2aae67116418abe4b02f9e843e84a0961b9f57796",
+          "weights_sha256": "6f2795b3058606ca39823fd27813053a8c8759e0199609adec1711cfd4b28522"
+        },
+        {
+          "rank": 4,
+          "routes_sha256": "26be4962dd61e8780f9214d3e99584d3b40e45eeca0c33cda1938263ea367d60",
+          "weights_sha256": "e35cb1faa56f05c05a71d62c8e0950bd7c3cbdb9e5cd4c971f6e63c3977165ab"
+        },
+        {
+          "rank": 5,
+          "routes_sha256": "0f16736706eee51365ffd006fb4c16631633c7dbac58dd7a53d7d0b628559a2a",
+          "weights_sha256": "9893b113a1e281ff1093ae2536a657b64899abfc6f52861fccf522f5724261d6"
+        },
+        {
+          "rank": 6,
+          "routes_sha256": "4a55b9f9dcfa3aaa05d997e351693216056ae621543ddb0dc68b386a524a8d0e",
+          "weights_sha256": "aaf1ef7178eaf00557ee18049258b81854ddeed11677c9bfe2ceefd48c2c3170"
+        },
+        {
+          "rank": 7,
+          "routes_sha256": "0f691cff9e91bd5e9334f9bc6281fec6ba935458708c7d71c688df48a1b3b945",
+          "weights_sha256": "75ff8a3c79b46dc038c7eb375f91151e30455ea19361bb2518b62813a376779d"
+        }
+      ],
+      "global_routes_sha256": "377e3163dd1d59b11c49f119e9151b2df737e01b8e197c09b09e3a06cde9a86b",
+      "route_volume": {
+        "remote_source_tokens": 512,
+        "remote_deliveries": 2387,
+        "remote_expert_branches": 3577,
+        "relay_token_copies": 511
+      },
+      "remote_delivery_fraction_of_allgather": 0.666015625
+    },
+    {
+      "tokens_per_gpu": 128,
+      "per_rank": [
+        {
+          "rank": 0,
+          "routes_sha256": "2186088d86bb132381ad0b23795c439749da77d2aa8cd180e46201ce063d207d",
+          "weights_sha256": "32d1d25ad464f244a81da412a1b85cb46ec0cff69950eae30ec4e9b798a2d0c0"
+        },
+        {
+          "rank": 1,
+          "routes_sha256": "c0576911e5228d60d16209888df2598cd292d74e650c09c5ba533f0cd85d6449",
+          "weights_sha256": "9e4caac3159f41341e9c1ae0b82b2da6fc5cd490e6a45ffe87723b3b337408a8"
+        },
+        {
+          "rank": 2,
+          "routes_sha256": "c75b9573a4997d36613c7a9068b977ed8b4778fabf957d8e6a05ae1637bd9682",
+          "weights_sha256": "2baac232c84ba55dc298b050b164617b68f798f85b4d260d04e783d60ed6bef3"
+        },
+        {
+          "rank": 3,
+          "routes_sha256": "a09b7e79847019b4685a9d3f34b5626d190786a465d865978c8885f086304811",
+          "weights_sha256": "7d2515ea795c35ad3a3d491e8f6cf556bceda07f1cc0778863fc14cdf6bd088c"
+        },
+        {
+          "rank": 4,
+          "routes_sha256": "f062bc6fd02cc51d323f9c10307da1b8582e2311e78c37046e387d03081f1877",
+          "weights_sha256": "e10178cbf1d17bd581fa9b7f67fa3148c5b525e9d7e1ba8c924a706348698bfb"
+        },
+        {
+          "rank": 5,
+          "routes_sha256": "bc10e323a0e3e92e05c9758ca7420425fb2311cf3790443045648269ab2b430e",
+          "weights_sha256": "e61017d7c2fcc5cfe9f604ab247bdeec05cf9fb769e0262ce97c10853b9ecf31"
+        },
+        {
+          "rank": 6,
+          "routes_sha256": "827b08725652c20cde99e3313491dccae721e4f6d236f55b72694346612bfc4c",
+          "weights_sha256": "f16f495fdf7fd1ee9c06a7d7425ebcff01d0bd66bd723b6949c105a62a6407ff"
+        },
+        {
+          "rank": 7,
+          "routes_sha256": "73a180c9b8f3f63a86b98d29276c9ca033ca1d3da5e24f40df714a4203f3a253",
+          "weights_sha256": "a5a634510bc8591a218e079e3cd1d6aa2367b5a7f805251694a1985352fea68e"
+        }
+      ],
+      "global_routes_sha256": "93af04d854daff7c2da81755fba129f94f62190f4ab0243c0a33ef065265c151",
+      "route_volume": {
+        "remote_source_tokens": 1024,
+        "remote_deliveries": 4766,
+        "remote_expert_branches": 7188,
+        "relay_token_copies": 1018
+      },
+      "remote_delivery_fraction_of_allgather": 0.6648995535714286
+    },
+    {
+      "tokens_per_gpu": 256,
+      "per_rank": [
+        {
+          "rank": 0,
+          "routes_sha256": "c3f15c85533fd99fb1d8810c73073763aa329e269794e315da84724c1821a00a",
+          "weights_sha256": "a1ebeddf41d95df12536f70e0a1ae880ed0b53a10e9d9c9479081dfdefaf8167"
+        },
+        {
+          "rank": 1,
+          "routes_sha256": "5347e67b7ef324c036e11a2a0866be814216849ccc7112427ef2f4e22ef0a49a",
+          "weights_sha256": "8a473bcf7b53fbfe9ca5ba33018efc6c5fbb6adcb4d3665927d7b587232e6a05"
+        },
+        {
+          "rank": 2,
+          "routes_sha256": "1efd820caf76b6a9f0ecf455d4e8b714052fa254dfc08f0c65e41e40c301b7a6",
+          "weights_sha256": "5e15317971d53598f42d60321912b811ebf04fc1d473b08b6ae4560f8c691e2f"
+        },
+        {
+          "rank": 3,
+          "routes_sha256": "a96c346a3b787b17787be2012a0a8cc066a1aaaba54c02c8d60b797c6eca0731",
+          "weights_sha256": "da38a661c3abcae2db1f47360d75719848554ce2119124e6cd1d33b1b4b5b61a"
+        },
+        {
+          "rank": 4,
+          "routes_sha256": "fe607f38938697df0ad36d3768dfd13b53ace057f729af34f3d5acb08c851cb1",
+          "weights_sha256": "7a91b88ec89cbc4889fc89dd9cab192cd0a378986eed112920c69580e67b680a"
+        },
+        {
+          "rank": 5,
+          "routes_sha256": "f1f94e6c1bb10c287966f3f87ae296072b450ac444d42635a859f7744fd14454",
+          "weights_sha256": "59eb96146a50ae09256a2c87dbd7c96bd143ce4950b5e15c53044b03e038ecdb"
+        },
+        {
+          "rank": 6,
+          "routes_sha256": "eee644dce7f3e81839c3f3c668c971d7f7af9e40a7bdd033a47889345eaaad06",
+          "weights_sha256": "95bed57ca529b73efb5c55651e754ffcfba8e4fd51eeded68d4f669f8212161e"
+        },
+        {
+          "rank": 7,
+          "routes_sha256": "4f735ed0ce51aec9322277eb8e5bd8f59bfb9a99814b2e0e64092deda58a10c1",
+          "weights_sha256": "a6b03852d413128a3dc605ce435ee2fd75f7bfcf43cc7d0df23bb3649ba25e8d"
+        }
+      ],
+      "global_routes_sha256": "701cf958de278575d387f5889f4622fb2b35d7acf559cac7d32e0a66e95343fc",
+      "route_volume": {
+        "remote_source_tokens": 2048,
+        "remote_deliveries": 9486,
+        "remote_expert_branches": 14340,
+        "relay_token_copies": 2032
+      },
+      "remote_delivery_fraction_of_allgather": 0.6616908482142857
+    },
+    {
+      "tokens_per_gpu": 512,
+      "per_rank": [
+        {
+          "rank": 0,
+          "routes_sha256": "c5256fa66b496f48296d08475dbe392e5ad436a148300d9de77beabda9bdf48c",
+          "weights_sha256": "35acf62ccd5ce979ae6e68e66cc6048148876a062607d10ffbe4f3e0624799d6"
+        },
+        {
+          "rank": 1,
+          "routes_sha256": "1817a67e22aa6ca41063889f1d6e66fcc6a59dcdd1427f5ac47ae9b0531b5f27",
+          "weights_sha256": "19689b7243c9872b672ab561923614e6642c41f205108c2e4252461096c2f1e5"
+        },
+        {
+          "rank": 2,
+          "routes_sha256": "911dcc5e07d82e81f718b2f59fd86781257b19894540614b7aab5be5d4449167",
+          "weights_sha256": "28a613b2687a50d4cbbc2532d78fe8e12ded0cef7ebab2b494eae41001a409f7"
+        },
+        {
+          "rank": 3,
+          "routes_sha256": "ff74670c38302d8947cb144288af93ada8009da9e3942d04d77c2a8313486c51",
+          "weights_sha256": "2791242a87872b6a34f42f5f8abebdae17557fc3f721972f3901d69cc2cd2156"
+        },
+        {
+          "rank": 4,
+          "routes_sha256": "f5344a461303c58f45d6db221d281e7af55da64b6546597c56652a4e167b9936",
+          "weights_sha256": "8765463bac3b5e6519c275cc6efc7d9a3bddea0a90aa4f79c50da3368c88bda0"
+        },
+        {
+          "rank": 5,
+          "routes_sha256": "e07dd5fa4b810808c2f6b3d695734e38aedd88aa2b18dd59369f8c910ea1fe1e",
+          "weights_sha256": "03e9840d32f1a3f06a24f84839e35d8ec3aaebb53cdf5b099c8884cb09a93de3"
+        },
+        {
+          "rank": 6,
+          "routes_sha256": "411e4c00b1522d61d2c13922c2028aa05aa65f428c7865b5e1b938d1a63741b3",
+          "weights_sha256": "ca33a5173d85a0967d445c639aa1698748741868a2c9f285e7b1c21b3135e1ab"
+        },
+        {
+          "rank": 7,
+          "routes_sha256": "c9a0953bc0b5c2b521ff52b099ca67f3efd87df8bbe1c1a7f8168dfafa0ded5a",
+          "weights_sha256": "acde8160f2428bb18ab3c52dcd6a6d7062a1e02af0a4a6638b1928ecaa1d68e3"
+        }
+      ],
+      "global_routes_sha256": "c77a6e86597cfac495df39248d3437ad3d85ea87738fe6d2b91e2d470a4fa705",
+      "route_volume": {
+        "remote_source_tokens": 4096,
+        "remote_deliveries": 19005,
+        "remote_expert_branches": 28591,
+        "relay_token_copies": 4079
+      },
+      "remote_delivery_fraction_of_allgather": 0.662841796875
+    },
+    {
+      "tokens_per_gpu": 1024,
+      "per_rank": [
+        {
+          "rank": 0,
+          "routes_sha256": "ea3d4ffee91f7f08b9541a5d4b8e467aeb8165275ff113615a5a5faa590d7160",
+          "weights_sha256": "c733e3821ca6b448929d835bf9493f56d8ea775c618d8607fbe752c84a663f67"
+        },
+        {
+          "rank": 1,
+          "routes_sha256": "c1f1763d243d0835fd778d00f760f4147a59e123d624da30fdcb056695436ea4",
+          "weights_sha256": "4aa175e5905bd1af2aac46caf9e74839e92922169592637878bb5603963844a4"
+        },
+        {
+          "rank": 2,
+          "routes_sha256": "dfefa9f917e12c255049ab98f3f165ca1372df9dbca433416192fbe29f40cad7",
+          "weights_sha256": "0f2375a512b500c0b756f32ededc7820606632473818376752ee53c704a63b6a"
+        },
+        {
+          "rank": 3,
+          "routes_sha256": "cbd32f17c553b09302c6f95bfc14acd71405d5badcbd4071464ac2bb94a5f675",
+          "weights_sha256": "58f5d666a05cc435ba1a4d9b0a21cbf2284f7f41cca08a8f503b14f4b1ce97a6"
+        },
+        {
+          "rank": 4,
+          "routes_sha256": "76eb4c998bfa4f209888b114e36e98966a02dad15051dbaaaf5a5936f28d1bb5",
+          "weights_sha256": "7adc3569ce827ad829251aded8040ec355e21469ba1d8946ad9ee6edfc20bb99"
+        },
+        {
+          "rank": 5,
+          "routes_sha256": "34b3876e77666b7ce04980ce24b047767df46b2930382068e400c1cdf7c3852e",
+          "weights_sha256": "19d3a29fedb827fd4d6b220022a4353eea44f66038e4e92caae1dea534ca9bcb"
+        },
+        {
+          "rank": 6,
+          "routes_sha256": "ec0f41c8408924de81801710d21549972c1b794edc22ab23625fcee340c11b2d",
+          "weights_sha256": "2fe5bcc413e994f9740208aff53b8715d679aaee775e5737fa31a264e73b8418"
+        },
+        {
+          "rank": 7,
+          "routes_sha256": "377d7f23a4369a3d62d079484cf32220d9e9830bbc9f1d068c76c1bd63ff0f49",
+          "weights_sha256": "6fb57e4c2f0fc9c0d2a065501e3906447a0776b5d36e6cdd4dd1a870e6b58797"
+        }
+      ],
+      "global_routes_sha256": "71b775dde1270def8ff4e80ea42b22fc1d18dcee9d4597083503ee4de4551b53",
+      "route_volume": {
+        "remote_source_tokens": 8192,
+        "remote_deliveries": 37899,
+        "remote_expert_branches": 57371,
+        "relay_token_copies": 8164
+      },
+      "remote_delivery_fraction_of_allgather": 0.6609061104910714
+    },
+    {
+      "tokens_per_gpu": 2048,
+      "per_rank": [
+        {
+          "rank": 0,
+          "routes_sha256": "030c0e18f05c987f5d9b0e6861702132d1790c90495f113a59fda912c21e963c",
+          "weights_sha256": "b0217f62e08f0d2ed025053d012d070bc6cc63a6a785ef20fe60cc4346e4dc52"
+        },
+        {
+          "rank": 1,
+          "routes_sha256": "4a98a0acc95aa2c05a6c25da5b9f628955578b434f6a1fdf4c0437e51c2a8d08",
+          "weights_sha256": "fa5c24936f92c70743d3a30bc1565907baf935b96a27960d931d4bcb42991018"
+        },
+        {
+          "rank": 2,
+          "routes_sha256": "1f9314df49cf40050e014c47562a65ae6fc82e89ae8f1506cda4b354df56de35",
+          "weights_sha256": "bc2b52a7216d92608256aa75526f6d28f052c602935205345e71f716a830256a"
+        },
+        {
+          "rank": 3,
+          "routes_sha256": "825dc1a7055ac3f01b83d3b4b0e3b74099e7811c7ebc55cec296974cd41e78a3",
+          "weights_sha256": "72e57c9032e21b04b39f07e99102eba3ddb4417544b43b431381dfd8243323d0"
+        },
+        {
+          "rank": 4,
+          "routes_sha256": "fd17ca156a98752cf0f8c88925d42158575cdc205387d3224843cc30a0291907",
+          "weights_sha256": "64a5a516f64074cce36e9c0a9c9dd5e8d5cb79eef13f15043a139f104ba52b31"
+        },
+        {
+          "rank": 5,
+          "routes_sha256": "aa9ca9894f5457f9d547d286042d95bd8af00cc7e442222503bc525ab14bf184",
+          "weights_sha256": "e8a1de2be791a44ac68c4bcfa782090b8276960f034e02085f96faf740ea07c7"
+        },
+        {
+          "rank": 6,
+          "routes_sha256": "2e86b5492778d165970421fb5a82da78214ee9047137db3d63fe4c0d1af2eb44",
+          "weights_sha256": "166fe26c4dc3cd705813cca68e78bf07668903004b198670314001d961dabb58"
+        },
+        {
+          "rank": 7,
+          "routes_sha256": "1543e0bca19bfbb32fa6b33e29366141951b1150849c55206c65343fdbb35243",
+          "weights_sha256": "85c1f78d999a76fad7ac8f15d58842d4cf09f2c89b1123df71e5e0c68df8cbd6"
+        }
+      ],
+      "global_routes_sha256": "c7aec035d58c7b18afe071674183d33f43e3d63dc9e2ea473e92c48cb55b01e2",
+      "route_volume": {
+        "remote_source_tokens": 16384,
+        "remote_deliveries": 75930,
+        "remote_expert_branches": 114894,
+        "relay_token_copies": 16324
+      },
+      "remote_delivery_fraction_of_allgather": 0.6620570591517857
+    },
+    {
+      "tokens_per_gpu": 4096,
+      "per_rank": [
+        {
+          "rank": 0,
+          "routes_sha256": "e3e5dc5a34775a0ffae1a8d78491f61ad0bd084721b601dcb0519d7825f3b032",
+          "weights_sha256": "aa0a072edee810e63041708616f203a8e691ee7074883b6291aa33a649a44128"
+        },
+        {
+          "rank": 1,
+          "routes_sha256": "065eb0fc05b4ec951ee056c2094bcf83218380043533924b3921c1729d22f514",
+          "weights_sha256": "19421e2115db93a704da8a40d2632a64a5aadd7e4023771569759b230e3332b1"
+        },
+        {
+          "rank": 2,
+          "routes_sha256": "76c8a2f207082c3b21eda772f7debd6cd116bc5715172e8db4754f6dc8b9255a",
+          "weights_sha256": "2b25168a63871489709bf6a8ba80007ba7ae0430af7d3a2e4795a5658d3d7e8f"
+        },
+        {
+          "rank": 3,
+          "routes_sha256": "717695188d977f152c59e0e8b52ecd0ffc15806f7706dc17b8d83c2c14124ba7",
+          "weights_sha256": "4334e9b7fa15f5810d5f2d8c407d2963ed9cff0fa5bd80dd4f87483e8d9f3626"
+        },
+        {
+          "rank": 4,
+          "routes_sha256": "1f980cbb547a76a95863ed9e5306ce260316118dc2c8c2bfa086e6225cfdcd48",
+          "weights_sha256": "e5728b00b23f77b4272f9e225364880c2e01e3db5d4cf66d5b7d5d5c01a0b16e"
+        },
+        {
+          "rank": 5,
+          "routes_sha256": "aa6d534e3327565b7cc6d9eddc44783652ddd16a3bb41f2292729a71093ef08e",
+          "weights_sha256": "b7ef4a43c44915d04bfc558eda06523ecfaf9a54c0ecb203ee94ad3f23429154"
+        },
+        {
+          "rank": 6,
+          "routes_sha256": "6f71044d0723694d9e69ba62e3a61f8f88868dea9e7d0e725e428acb1d78a735",
+          "weights_sha256": "46109ca2e6c0045235f7bb464cbdfb9f2fcf86b047d7982f89d374ced1f4557e"
+        },
+        {
+          "rank": 7,
+          "routes_sha256": "ecfc94f74223c9690264fe5a450e4ca98a1f58252ecf399862473025bc219e9e",
+          "weights_sha256": "eaf7aec12f63619db14de8aac771ede38dfb35a870140459b53cde18ac808198"
+        }
+      ],
+      "global_routes_sha256": "0a754f8d2fedf8ab9e48bc1bd64c6afe1e259392ea61d9b9f79c165d273ca4e7",
+      "route_volume": {
+        "remote_source_tokens": 32768,
+        "remote_deliveries": 152130,
+        "remote_expert_branches": 229440,
+        "relay_token_copies": 32674
+      },
+      "remote_delivery_fraction_of_allgather": 0.6632341657366071
+    },
+    {
+      "tokens_per_gpu": 8192,
+      "per_rank": [
+        {
+          "rank": 0,
+          "routes_sha256": "e5b67a2fa19438d61d965f7d3972030bebab3b14feeeb210837e6597a4b5dd8f",
+          "weights_sha256": "a8b6844f3ec857c7c653d3cb1fd50c4c58964f2f4558400b17cf5baa54cd9a00"
+        },
+        {
+          "rank": 1,
+          "routes_sha256": "a7548c4ab2e347e6fc1251816eb564a92be821350e919004703490aa4c299c3e",
+          "weights_sha256": "b5c9df7294b15ca9b145a1225aab6bb335a7896b721c81c212da3076aa4cf1f9"
+        },
+        {
+          "rank": 2,
+          "routes_sha256": "f5434a8e069a9369c377ac1adf97a1a32286e6b929633e9a500f53f339a1a9e4",
+          "weights_sha256": "b10a419fdf1dce02a010a54a88f582619c916e096b9b7a44483283527b24e474"
+        },
+        {
+          "rank": 3,
+          "routes_sha256": "40e2f5f00b25eb11a4b727764a7416ddf62bd449d65de6298060a626198674c3",
+          "weights_sha256": "7fb70ffe05611e617d531507bca8af4baa0e5b568ab6f4f9dc3753f6a5690ceb"
+        },
+        {
+          "rank": 4,
+          "routes_sha256": "05f831a0f1760117e3ef1b13684c2c916ee453fd734a173dc81a94a61dfa9661",
+          "weights_sha256": "073ba03aa2649416b319e1dca525e62fb55ac16c885c122252416a60d17759ea"
+        },
+        {
+          "rank": 5,
+          "routes_sha256": "9aaf1ee71439c5124b6281cc5dfdc2d4ee43cb073fd4cc8bfca658b15011d377",
+          "weights_sha256": "db646f0e83877f59963f72493204348360b5f3211a6e41a8b0ac2870c30c76b9"
+        },
+        {
+          "rank": 6,
+          "routes_sha256": "e6a17f0a66d6e0e678ed95a6ef06e16cf4f9ebc742654f426ec8a309d15bb908",
+          "weights_sha256": "e31c81b717285cf656b749ccde01e7b5c837433255d528b467c81c8b5813bc05"
+        },
+        {
+          "rank": 7,
+          "routes_sha256": "719dc7fff24dbf48715ffe7151cdca86d479abe50b2cbe3f9096bb075f53da8a",
+          "weights_sha256": "e92579e3f6b7f6c4e90d2b7229eb68d634705343307d362b935ae30c8baf393d"
+        }
+      ],
+      "global_routes_sha256": "7896dbd2c30d5022b72afdf412c4309e11a38342d0fb740177175e29349023e1",
+      "route_volume": {
+        "remote_source_tokens": 65536,
+        "remote_deliveries": 303584,
+        "remote_expert_branches": 459080,
+        "relay_token_copies": 65310
+      },
+      "remote_delivery_fraction_of_allgather": 0.6617606026785714
+    }
+  ]
+}

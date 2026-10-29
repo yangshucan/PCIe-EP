@@ -1,0 +1,1045 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "expected_world_size": 8,
+  "format_source_tag": "v2.29.7-1",
+  "format_sources": [
+    "https://github.com/NVIDIA/nccl/blob/v2.29.7-1/src/debug.cc",
+    "https://github.com/NVIDIA/nccl/blob/v2.29.7-1/src/init.cc",
+    "https://github.com/NVIDIA/nccl/blob/v2.29.7-1/src/transport/shm.cc",
+    "https://github.com/NVIDIA/nccl/blob/v2.29.7-1/src/transport/net.cc",
+    "https://github.com/NVIDIA/nccl/blob/v2.29.7-1/src/transport/p2p.cc",
+    "https://github.com/NVIDIA/nccl/blob/v2.29.7-1/src/transport/nvls.cc"
+  ],
+  "logs": [
+    {
+      "log_index": 0,
+      "sha256": "eb4efb43cdebc6b56d915554e65b10d4f5fe3ffc1825a83cada5ef782e5e78c5",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 1,
+      "sha256": "b48b5e5919dcfcc8dfe533995431e15cfd56655bf5ef883f8fa9c15e5073f419",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 2,
+      "sha256": "b1148f3906c56aa97a80eac9e3fe7af46ed6ee1ae07ad056dc9c7eac5683f197",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 3,
+      "sha256": "d7a2b93bb5bb5b72c7b25d52a86f061b8cb62e4e71a0fc4cdd4f3440f18508dc",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 4,
+      "sha256": "8e76b9afb2ddcdcae41cb7254d615daf2717d5c4f72b5881180a05cb2b60d6ee",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 5,
+      "sha256": "bda849e1acaf5f3cccaccd998b6e1e693e8207b02daa14c3a8c30d610ce81453",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 6,
+      "sha256": "921e40b2f7f3f270b8f7b70d8138bd7a96ec76f78102dc7a34830be4b8aea704",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 7,
+      "sha256": "06b1564eb54fd083405d650c6d68d36f73dad40f418b9c1c5f6fc58a1a7d9a91",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 8,
+      "sha256": "d8225a377c6adcba72bad8e7efa04f7fa1bcacd71a971cf636c8964e9c1b7ed6",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 9,
+      "sha256": "bd5991823ce73c9159b0ab6ed241f7c0f342302e7bd0391a516d6d5f22ec4a62",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 10,
+      "sha256": "d55e11dd6aef3bf2663ebbf4b3bb49fe547c071f021ddee6e58245aa80ba3568",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 11,
+      "sha256": "ebc7d8bc2de049d616ee636c5f8b02ba9addcc1bad4b4f589b662db74919cd91",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 12,
+      "sha256": "f2b34759ba72b6be30ac7b92ba8c2c38c6a3981ef282a628395a2efa35252b17",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 13,
+      "sha256": "36afddd11fab2a66d3f5386f8f95dd9cf738f1a36a74d1d62dcc9043dee153fd",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 14,
+      "sha256": "807d1b8895180c8065551076dc296c267e0cd789100f7bbe3ac7c76f71aab41d",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    },
+    {
+      "log_index": 15,
+      "sha256": "9a8dc59dd0c3e5943210f13164977e8ae140fec89db3363da14ff80228898174",
+      "nccl_versions": [
+        "2.29.7"
+      ],
+      "init_complete_count": 1,
+      "connection_candidate_count": 4,
+      "parsed_connection_count": 4
+    }
+  ],
+  "communicators": [
+    {
+      "communicator": 0,
+      "initialized_ranks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "init_complete_count": 8,
+      "sender_ranks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "destination_ranks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "connection_count": 32,
+      "channels": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "transport_counts": {
+        "SHM/direct/direct": 32
+      }
+    },
+    {
+      "communicator": 1,
+      "initialized_ranks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "init_complete_count": 8,
+      "sender_ranks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "destination_ranks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "connection_count": 32,
+      "channels": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "transport_counts": {
+        "SHM/direct/direct": 32
+      }
+    }
+  ],
+  "connections": [
+    {
+      "communicator": 0,
+      "log_index": 0,
+      "line": 191,
+      "source": 0,
+      "destination": 1,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 0
+    },
+    {
+      "communicator": 0,
+      "log_index": 0,
+      "line": 195,
+      "source": 0,
+      "destination": 1,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 0
+    },
+    {
+      "communicator": 0,
+      "log_index": 0,
+      "line": 199,
+      "source": 0,
+      "destination": 1,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 0
+    },
+    {
+      "communicator": 0,
+      "log_index": 0,
+      "line": 203,
+      "source": 0,
+      "destination": 1,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 0
+    },
+    {
+      "communicator": 0,
+      "log_index": 1,
+      "line": 162,
+      "source": 1,
+      "destination": 2,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 1
+    },
+    {
+      "communicator": 0,
+      "log_index": 1,
+      "line": 166,
+      "source": 1,
+      "destination": 2,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 1
+    },
+    {
+      "communicator": 0,
+      "log_index": 1,
+      "line": 170,
+      "source": 1,
+      "destination": 2,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 1
+    },
+    {
+      "communicator": 0,
+      "log_index": 1,
+      "line": 174,
+      "source": 1,
+      "destination": 2,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 1
+    },
+    {
+      "communicator": 0,
+      "log_index": 2,
+      "line": 158,
+      "source": 2,
+      "destination": 3,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 2
+    },
+    {
+      "communicator": 0,
+      "log_index": 2,
+      "line": 162,
+      "source": 2,
+      "destination": 3,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 2
+    },
+    {
+      "communicator": 0,
+      "log_index": 2,
+      "line": 166,
+      "source": 2,
+      "destination": 3,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 2
+    },
+    {
+      "communicator": 0,
+      "log_index": 2,
+      "line": 170,
+      "source": 2,
+      "destination": 3,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 2
+    },
+    {
+      "communicator": 0,
+      "log_index": 3,
+      "line": 158,
+      "source": 3,
+      "destination": 4,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 3
+    },
+    {
+      "communicator": 0,
+      "log_index": 3,
+      "line": 162,
+      "source": 3,
+      "destination": 4,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 3
+    },
+    {
+      "communicator": 0,
+      "log_index": 3,
+      "line": 166,
+      "source": 3,
+      "destination": 4,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 3
+    },
+    {
+      "communicator": 0,
+      "log_index": 3,
+      "line": 170,
+      "source": 3,
+      "destination": 4,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 3
+    },
+    {
+      "communicator": 0,
+      "log_index": 4,
+      "line": 158,
+      "source": 4,
+      "destination": 5,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 4
+    },
+    {
+      "communicator": 0,
+      "log_index": 4,
+      "line": 162,
+      "source": 4,
+      "destination": 5,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 4
+    },
+    {
+      "communicator": 0,
+      "log_index": 4,
+      "line": 166,
+      "source": 4,
+      "destination": 5,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 4
+    },
+    {
+      "communicator": 0,
+      "log_index": 4,
+      "line": 170,
+      "source": 4,
+      "destination": 5,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 4
+    },
+    {
+      "communicator": 0,
+      "log_index": 5,
+      "line": 158,
+      "source": 5,
+      "destination": 6,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 5
+    },
+    {
+      "communicator": 0,
+      "log_index": 5,
+      "line": 162,
+      "source": 5,
+      "destination": 6,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 5
+    },
+    {
+      "communicator": 0,
+      "log_index": 5,
+      "line": 166,
+      "source": 5,
+      "destination": 6,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 5
+    },
+    {
+      "communicator": 0,
+      "log_index": 5,
+      "line": 170,
+      "source": 5,
+      "destination": 6,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 5
+    },
+    {
+      "communicator": 0,
+      "log_index": 6,
+      "line": 158,
+      "source": 6,
+      "destination": 7,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 6
+    },
+    {
+      "communicator": 0,
+      "log_index": 6,
+      "line": 162,
+      "source": 6,
+      "destination": 7,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 6
+    },
+    {
+      "communicator": 0,
+      "log_index": 6,
+      "line": 166,
+      "source": 6,
+      "destination": 7,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 6
+    },
+    {
+      "communicator": 0,
+      "log_index": 6,
+      "line": 170,
+      "source": 6,
+      "destination": 7,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 6
+    },
+    {
+      "communicator": 0,
+      "log_index": 7,
+      "line": 158,
+      "source": 7,
+      "destination": 0,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 7
+    },
+    {
+      "communicator": 0,
+      "log_index": 7,
+      "line": 162,
+      "source": 7,
+      "destination": 0,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 7
+    },
+    {
+      "communicator": 0,
+      "log_index": 7,
+      "line": 166,
+      "source": 7,
+      "destination": 0,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 7
+    },
+    {
+      "communicator": 0,
+      "log_index": 7,
+      "line": 170,
+      "source": 7,
+      "destination": 0,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 7
+    },
+    {
+      "communicator": 1,
+      "log_index": 8,
+      "line": 191,
+      "source": 0,
+      "destination": 1,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 0
+    },
+    {
+      "communicator": 1,
+      "log_index": 8,
+      "line": 195,
+      "source": 0,
+      "destination": 1,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 0
+    },
+    {
+      "communicator": 1,
+      "log_index": 8,
+      "line": 199,
+      "source": 0,
+      "destination": 1,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 0
+    },
+    {
+      "communicator": 1,
+      "log_index": 8,
+      "line": 203,
+      "source": 0,
+      "destination": 1,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 0
+    },
+    {
+      "communicator": 1,
+      "log_index": 9,
+      "line": 162,
+      "source": 1,
+      "destination": 2,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 1
+    },
+    {
+      "communicator": 1,
+      "log_index": 9,
+      "line": 166,
+      "source": 1,
+      "destination": 2,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 1
+    },
+    {
+      "communicator": 1,
+      "log_index": 9,
+      "line": 170,
+      "source": 1,
+      "destination": 2,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 1
+    },
+    {
+      "communicator": 1,
+      "log_index": 9,
+      "line": 174,
+      "source": 1,
+      "destination": 2,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 1
+    },
+    {
+      "communicator": 1,
+      "log_index": 10,
+      "line": 158,
+      "source": 2,
+      "destination": 3,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 2
+    },
+    {
+      "communicator": 1,
+      "log_index": 10,
+      "line": 162,
+      "source": 2,
+      "destination": 3,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 2
+    },
+    {
+      "communicator": 1,
+      "log_index": 10,
+      "line": 166,
+      "source": 2,
+      "destination": 3,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 2
+    },
+    {
+      "communicator": 1,
+      "log_index": 10,
+      "line": 170,
+      "source": 2,
+      "destination": 3,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 2
+    },
+    {
+      "communicator": 1,
+      "log_index": 11,
+      "line": 158,
+      "source": 3,
+      "destination": 4,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 3
+    },
+    {
+      "communicator": 1,
+      "log_index": 11,
+      "line": 162,
+      "source": 3,
+      "destination": 4,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 3
+    },
+    {
+      "communicator": 1,
+      "log_index": 11,
+      "line": 166,
+      "source": 3,
+      "destination": 4,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 3
+    },
+    {
+      "communicator": 1,
+      "log_index": 11,
+      "line": 170,
+      "source": 3,
+      "destination": 4,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 3
+    },
+    {
+      "communicator": 1,
+      "log_index": 12,
+      "line": 158,
+      "source": 4,
+      "destination": 5,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 4
+    },
+    {
+      "communicator": 1,
+      "log_index": 12,
+      "line": 162,
+      "source": 4,
+      "destination": 5,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 4
+    },
+    {
+      "communicator": 1,
+      "log_index": 12,
+      "line": 166,
+      "source": 4,
+      "destination": 5,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 4
+    },
+    {
+      "communicator": 1,
+      "log_index": 12,
+      "line": 170,
+      "source": 4,
+      "destination": 5,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 4
+    },
+    {
+      "communicator": 1,
+      "log_index": 13,
+      "line": 158,
+      "source": 5,
+      "destination": 6,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 5
+    },
+    {
+      "communicator": 1,
+      "log_index": 13,
+      "line": 162,
+      "source": 5,
+      "destination": 6,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 5
+    },
+    {
+      "communicator": 1,
+      "log_index": 13,
+      "line": 166,
+      "source": 5,
+      "destination": 6,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 5
+    },
+    {
+      "communicator": 1,
+      "log_index": 13,
+      "line": 170,
+      "source": 5,
+      "destination": 6,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 5
+    },
+    {
+      "communicator": 1,
+      "log_index": 14,
+      "line": 158,
+      "source": 6,
+      "destination": 7,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 6
+    },
+    {
+      "communicator": 1,
+      "log_index": 14,
+      "line": 162,
+      "source": 6,
+      "destination": 7,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 6
+    },
+    {
+      "communicator": 1,
+      "log_index": 14,
+      "line": 166,
+      "source": 6,
+      "destination": 7,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 6
+    },
+    {
+      "communicator": 1,
+      "log_index": 14,
+      "line": 170,
+      "source": 6,
+      "destination": 7,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 6
+    },
+    {
+      "communicator": 1,
+      "log_index": 15,
+      "line": 158,
+      "source": 7,
+      "destination": 0,
+      "channel": 0,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 7
+    },
+    {
+      "communicator": 1,
+      "log_index": 15,
+      "line": 162,
+      "source": 7,
+      "destination": 0,
+      "channel": 1,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 7
+    },
+    {
+      "communicator": 1,
+      "log_index": 15,
+      "line": 166,
+      "source": 7,
+      "destination": 0,
+      "channel": 2,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 7
+    },
+    {
+      "communicator": 1,
+      "log_index": 15,
+      "line": 170,
+      "source": 7,
+      "destination": 0,
+      "channel": 3,
+      "connection_index": null,
+      "direction": "send",
+      "transport": "SHM/direct/direct",
+      "rank": 7
+    }
+  ],
+  "all_logged_data_connections_are_shm": true,
+  "all_connection_candidates_parsed_and_bound": true,
+  "errors": [],
+  "limitations": [
+    "Covers every Channel/via INFO record in the supplied complete per-process logs.",
+    "Connection records lack communicator IDs; one initialized communicator per process log is required.",
+    "Bootstrap network discovery is allowed and is distinct from a Channel/via NET data connection.",
+    "Logs do not replace payload correctness checks or before/after NVLink counters."
+  ]
+}

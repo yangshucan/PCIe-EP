@@ -73,6 +73,9 @@ class AdvancedRuntime {
         Tensor receive_expand_overlap;
         Tensor receive_prefix_state;
         Tensor prefix_tx_timestamps_ns;
+#if PCIE_EP_ENABLE_PROFILING
+        Tensor profiling;
+#endif
     };
 
     AdvancedConfig config_;
@@ -165,6 +168,15 @@ public:
 
     void set_test_prefix_delay_ns(std::uint64_t delay_ns) {
         config_.prefix_delay_ns = delay_ns;
+    }
+
+    void set_test_control_abort_after_ns(std::uint64_t delay_ns) {
+        config_.control_abort_after_ns = delay_ns;
+    }
+
+    void set_test_skip_counts_ack_source(int source) {
+        TORCH_CHECK(source >= -1 && source < shared_.base.num_ranks, "invalid test counts source");
+        config_.counts_ack_skip_source = source;
     }
 
     py::dict relay_diagnostics() const {
@@ -312,6 +324,9 @@ private:
             output.receive_expand_overlap = torch::empty({config_.channels, 2}, i64);
             output.receive_prefix_state = torch::empty({2}, i64);
             output.prefix_tx_timestamps_ns = torch::empty({config_.channels + 1, 2}, i64);
+#if PCIE_EP_ENABLE_PROFILING
+            output.profiling = torch::empty({config_.channels, kNumTransportProfileRoles, kNumTransportProfileFields}, i64);
+#endif
         }
         for (int i = 0; i < config_.output_pool_size; ++i) {
             plans_.push_back(std::make_shared<AdvancedLayout>(owner_id_, device_, shared_));
@@ -364,7 +379,11 @@ private:
         }
     }
 
+#if PCIE_EP_ENABLE_PROFILING
+    static std::array<Tensor*, 22> output_tensors(OutputSet& output) {
+#else
     static std::array<Tensor*, 21> output_tensors(OutputSet& output) {
+#endif
         return {&output.unique_payload, &output.unique_topk_indices,
                 &output.unique_topk_weights, &output.unique_source_metadata,
                 &output.expanded_payload, &output.expanded_expert_indices,
@@ -374,7 +393,11 @@ private:
                 &output.expert_offsets, &output.source_offsets,
                 &output.errors, &output.statistics, &output.transport_timestamps_ns,
                 &output.channel_statistics, &output.channel_timestamps_ns,
-                &output.receive_expand_overlap, &output.prefix_tx_timestamps_ns};
+                &output.receive_expand_overlap, &output.prefix_tx_timestamps_ns
+#if PCIE_EP_ENABLE_PROFILING
+                , &output.profiling
+#endif
+        };
     }
     OutputSet& select_output(bool graph_pool) {
         if (graph_pool) {
@@ -425,6 +448,9 @@ private:
         state.expected_receive_counts = output.expected_receive_counts.data_ptr<int>();
         state.receive_prefix_state = reinterpret_cast<std::uint64_t*>(output.receive_prefix_state.data_ptr<int64_t>());
         state.prefix_tx_timestamps_ns = output.prefix_tx_timestamps_ns.data_ptr<int64_t>();
+#if PCIE_EP_ENABLE_PROFILING
+        state.profiling = output.profiling.data_ptr<int64_t>();
+#endif
         state.expanded_payload = static_cast<std::uint16_t*>(output.expanded_payload.data_ptr());
         state.expanded_expert_indices = output.expanded_expert_indices.data_ptr<int64_t>();
         state.expanded_weights = output.expanded_weights.data_ptr<float>();
@@ -438,6 +464,8 @@ private:
         state.rx_delay_ns = config_.rx_delay_ns;
         state.scatter_delay_ns = config_.scatter_delay_ns;
         state.prefix_delay_ns = config_.prefix_delay_ns;
+        state.control_abort_after_ns = config_.control_abort_after_ns;
+        state.counts_ack_skip_source = config_.counts_ack_skip_source;
         return state;
     }
 
@@ -514,6 +542,9 @@ private:
         result["channel_stats"] = output.channel_statistics;
         result["channel_timestamps_ns"] = output.channel_timestamps_ns;
         result["prefix_tx_timestamps_ns"] = output.prefix_tx_timestamps_ns;
+#if PCIE_EP_ENABLE_PROFILING
+        result["profiling"] = output.profiling;
+#endif
         return result;
     }
 };

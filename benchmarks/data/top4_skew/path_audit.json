@@ -1,0 +1,3528 @@
+{
+  "schema_version": 1,
+  "profiles": {
+    "nvidia_calibrated": {
+      "status": "passed",
+      "nccl_communicators": 2,
+      "nccl_connections": 64,
+      "all_logged_data_connections_are_shm": true,
+      "actual_algorithm": "Ring",
+      "actual_protocol": "Simple",
+      "active_channels": 4,
+      "nvlink_counter_count": 288,
+      "all_payload_deltas_zero": true,
+      "nvlink_deltas": [
+        {
+          "gpu": 0,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        }
+      ],
+      "before_evidence_sha256": "0aa28ba23e694ca5953ee4b34d3ce2216fec4eec7a457ae69b50faa90dac1d7b",
+      "after_evidence_sha256": "e0a5d40266e04f381b54ac9df5734ea72cb0afc62b70c42aa53b13defcfdf70b",
+      "rank_output_validations": 480,
+      "expert_expansion_rank_validations": 320,
+      "fixed_routes_weights_payload_equal_across_variants_and_rounds": true
+    },
+    "hotspot_20_80": {
+      "status": "passed",
+      "nccl_communicators": 2,
+      "nccl_connections": 64,
+      "all_logged_data_connections_are_shm": true,
+      "actual_algorithm": "Ring",
+      "actual_protocol": "Simple",
+      "active_channels": 4,
+      "nvlink_counter_count": 288,
+      "all_payload_deltas_zero": true,
+      "nvlink_deltas": [
+        {
+          "gpu": 0,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 0,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 1,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 2,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 3,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 4,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 5,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 6,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 0,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 0,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 1,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 1,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 2,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 2,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 3,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 3,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 4,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 4,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 5,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 5,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 6,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 6,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 7,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 7,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 8,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 8,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 9,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 9,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 10,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 10,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 11,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 11,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 12,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 12,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 13,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 13,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 14,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 14,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 15,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 15,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 16,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 16,
+          "direction": "Tx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 17,
+          "direction": "Rx",
+          "delta_KiB": 0
+        },
+        {
+          "gpu": 7,
+          "link": 17,
+          "direction": "Tx",
+          "delta_KiB": 0
+        }
+      ],
+      "before_evidence_sha256": "108e0ac0c20b8e0633127c5d4cf4e00f69021ed5a185de1b4039d31c34660f49",
+      "after_evidence_sha256": "13584387ae9efe0a5317e7a1a0e59ba121c02ff5fae9e24d10d0c9e125793d1e",
+      "rank_output_validations": 480,
+      "expert_expansion_rank_validations": 320,
+      "fixed_routes_weights_payload_equal_across_variants_and_rounds": true
+    }
+  },
+  "runtime_files_unchanged": {
+    "csrc/buffers/advanced.hpp": "ff9d3d8ba316cab92d92b07afc78e84fa9c2256baab07a70872e991090c833e2",
+    "csrc/comm/advanced_shared_memory.hpp": "ab138254ab7225d99d5e19f98ce91559a7aca170ec43a8f1aeac08fba7ac1d7a",
+    "csrc/comm/host_shared_memory.hpp": "52d833b74295cb8fcbee019c575cea7d9dade4a2b41126dd988a01f1b35d2fbe",
+    "csrc/comm/numa_relay.hpp": "e150da32fa39119971c951b78023333ab27101d1925e9200b6e178017cd211ec",
+    "csrc/kernels/host_staged/advanced_common.cuh": "6c33f7591835dc075e34298a636fa8a3d63d1c9635c4afcdb3a10a2d756ab968",
+    "csrc/kernels/host_staged/advanced_dispatch.cuh": "781b7715d8b099b20b11524fb77f65164e85d023f2fe1f1a3dd2f1349a477a17",
+    "csrc/kernels/host_staged/advanced_layout.cuh": "ab015fa26e6f7f938f6a15f958b455c3b9ab53c2adeaeee027c546470a3fbf3e",
+    "csrc/kernels/host_staged/common.cuh": "cc6d45f8270c7d66b290a1286bc2a9f437d6bd38720e85cdf4bb0086d405d0e4",
+    "csrc/kernels/host_staged/dispatch.cuh": "1cf5072e8fc20634fd33bca47a1c4927f9630de6969ccea2c17cd3d74e1f10b4",
+    "csrc/kernels/host_staged/fused_receive.cuh": "856cd29ee7494c22244ed1d61a4396cc93746348b3cea0cf65ec5ce7623e9f63",
+    "csrc/kernels/host_staged/layout.cuh": "43c0ba3f1b92435ead08dc9b839b652eeb7fc3caf101396c5882ad28dd37811d",
+    "csrc/kernels/host_staged/quantization.cuh": "6f7b89716b26aaad79bb1fe39d0508fe8d3540480a3806d68e23b23818e2ce4e",
+    "csrc/runtime.cu": "815e6d66f8e5a15b53411549f276e85781a52936b350470964de9388e9f61440",
+    "pcie_ep/_C.py": "a3071aa8b6c5bc76122d259afb11828fd95de6211720dcac4691002b67c7a6a0",
+    "pcie_ep/__init__.py": "686a6fc3ffa86a116e8c492c0e1022424fe42bbff372d069f351990f0e4436a9",
+    "pcie_ep/buffer.py": "f2995cbf3f1e4af9868ad07b9a46b1b2bd52b277cbfd01d547a37b23dc92349e",
+    "pcie_ep/buffers/__init__.py": "2220d69f1559378b52184821f452ea845664cfe52759d613f0aee60e64612212",
+    "pcie_ep/buffers/ep.py": "8d6a10723a62180cf78088d31ea6581db4c490d79874882e92e47fde14e89e1e",
+    "pcie_ep/buffers/handle.py": "0c901522eae1860efeac54c12380f8bd2c4bdca0e6d38b35db73d9cd6b3eafe0",
+    "pcie_ep/comm.py": "dd862a82772a9386e7b384435338bd6adc767a6cbd492a52c0f361795a88222f",
+    "pcie_ep/config.py": "9bdf963cd51a30783088c4774114a7780a7de0ba03450e6aabf863d14375e9b1",
+    "pcie_ep/graph.py": "0a9a1190dca6987284893024cd2cc080dbbe4dd12e2493e4242e6267d96239ab",
+    "pcie_ep/native.py": "53cfc885a7be6f88122d73666e0aff97653eefeda40bb6506ded6353284baa39",
+    "pcie_ep/quantization.py": "2cc928bbb2f022299e5ca40f6637da505eca76da0a9215b1bc5d700b60799d8f",
+    "pcie_ep/utils/__init__.py": "a2eb131ffa7be016e5566f8da829957a7f3d86ce48bcd95bea1f8ee87adc8fc5",
+    "pcie_ep/utils/event.py": "6a05fc86e1a07de03292cae206ab724beda25c9086636ac64252514f2fd52387"
+  },
+  "payload_identical_between_profiles": true,
+  "interrupted_hotspot_attempt_excluded": true,
+  "scope": "New formal runs, each with before/after counters. Existing production runtime source checks remain applicable; no fresh fine-grained profiler capture was used for these timing samples."
+}

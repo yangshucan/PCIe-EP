@@ -31,6 +31,17 @@ PYTHON_GPU_COMMUNICATION = (
     r"all_gather(?:_into_tensor)?|reduce_scatter(?:_tensor)?|broadcast|"
     r"send|recv|isend|irecv|batch_isend_irecv)$|^torch\.cuda\.comm\."
 )
+REFERENCE_COLLECTIVE_EXCLUSIONS = {
+    "benchmarks/benchmark_nccl_shm.py": (
+        "Independent NCCL SHM comparison entry point; not part of the production payload runtime"
+    ),
+}
+REFERENCE_MODULES = {"benchmark_nccl_shm", "nccl_expand"}
+REFERENCE_ARTIFACTS = (
+    "benchmarks/benchmark_nccl_shm.py",
+    "benchmarks/nccl_expand.py",
+    "benchmarks/csrc/nccl_expand.cu",
+)
 EXPECTED_COUNTER_KEYS = {(gpu, link, direction) for gpu in range(8) for link in range(18) for direction in ("Tx", "Rx")}
 
 
@@ -82,6 +93,87 @@ def inspect_python(sources):
             elif isinstance(node, (ast.Import, ast.ImportFrom)):
                 imports.append({"path": path, "line": node.lineno, "import": ast.unparse(node)})
     return calls, imports
+
+
+def forbidden_python_calls(calls):
+    # Only the independent comparison entry point may call NCCL collectives.
+    # Its source still participates in hashing and executed-manifest binding.
+    return [
+        row for row in calls
+        if row["path"] not in REFERENCE_COLLECTIVE_EXCLUSIONS
+        and re.search(PYTHON_GPU_COMMUNICATION, row["call"])
+    ]
+
+
+def inspect_production_reference_imports(sources):
+    """Reject reference-module imports from production package sources.
+
+    Parse module names rather than matching import text, so aliases and both
+    ``from benchmarks import nccl_expand`` and relative imports are covered.
+    Literal dynamic imports through importlib/__import__ are covered too.
+    This is source inspection, not an attempt to execute arbitrary Python.
+    """
+    violations = []
+    for path, source in sources.items():
+        if not path.startswith("pcie_ep/"):
+            continue
+        tree = ast.parse(source, filename=path)
+        importlib_names, import_module_names, builtins_names = {"importlib"}, set(), {"builtins"}
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for name in node.names:
+                    if name.name == "importlib":
+                        importlib_names.add(name.asname or name.name)
+                    elif name.name == "builtins":
+                        builtins_names.add(name.asname or name.name)
+            elif isinstance(node, ast.ImportFrom) and node.module == "importlib":
+                import_module_names.update(name.asname or name.name for name in node.names if name.name == "import_module")
+
+        for node in ast.walk(tree):
+            modules = []
+            if isinstance(node, ast.Import):
+                modules = [name.name for name in node.names]
+            elif isinstance(node, ast.ImportFrom):
+                modules = [node.module or ""]
+                modules.extend(".".join(filter(None, (node.module, name.name))) for name in node.names)
+            elif isinstance(node, ast.Call) and node.args:
+                function = ast.unparse(node.func)
+                import_functions = {"__import__"} | import_module_names
+                import_functions.update(name + ".import_module" for name in importlib_names)
+                import_functions.update(name + ".__import__" for name in builtins_names)
+                argument = node.args[0]
+                if function in import_functions and isinstance(argument, ast.Constant) and isinstance(argument.value, str):
+                    modules = [argument.value]
+            references = sorted({module for module in modules if REFERENCE_MODULES.intersection(module.split("."))})
+            if references:
+                violations.append({"path": path, "line": node.lineno, "import": ast.unparse(node), "modules": references})
+    return violations
+
+
+def python_policy_scope(source_hashes):
+    return {
+        "reference_only_exclusions": [
+            {"path": path, "sha256": source_hashes[path], "reason": reason}
+            for path, reason in REFERENCE_COLLECTIVE_EXCLUSIONS.items() if path in source_hashes
+        ],
+        "exclusion_applies_to": "Python forbidden GPU communication calls only, for the exact path listed",
+        "reference_sources_hashed_and_manifest_bound": True,
+        "production_reference_imports_allowed": False,
+        "unchanged_checks": "Production C++/Python, binary symbols, SASS, RMW provenance and NVLink counters",
+    }
+
+
+def collect_source_paths(root):
+    cpp_paths = sorted(
+        path for path in (root / "csrc").rglob("*") if path.suffix in CPP_SUFFIXES and not path.name.startswith(".")
+    )
+    python_paths = sorted((root / "pcie_ep").rglob("*.py"))
+    benchmark_paths = sorted((root / "benchmarks").glob("*.py"))
+    reference_paths = [root / path for path in REFERENCE_ARTIFACTS if (root / path).is_file()]
+    # The independent helper is not production C++, but its exact source must
+    # remain bound to the executed manifest alongside the comparison entry.
+    source_paths = sorted(set(cpp_paths + python_paths + benchmark_paths + reference_paths))
+    return cpp_paths, python_paths, benchmark_paths, source_paths
 
 
 def inspect_rmw(sources):
@@ -347,19 +439,15 @@ def main():
     if not args.binary.is_file():
         parser.error("Existing extension binary is required; this collector never builds it")
 
-    cpp_paths = sorted(
-        path for path in (root / "csrc").rglob("*") if path.suffix in CPP_SUFFIXES and not path.name.startswith(".")
-    )
-    python_paths = sorted((root / "pcie_ep").rglob("*.py"))
-    benchmark_paths = sorted((root / "benchmarks").glob("*.py"))
-    source_paths = cpp_paths + python_paths + benchmark_paths
+    cpp_paths, python_paths, benchmark_paths, source_paths = collect_source_paths(root)
     initial_hashes = {str(path.relative_to(root)): sha256(path) for path in source_paths}
     cpp_sources = {str(path.relative_to(root)): path.read_text() for path in cpp_paths}
     python_sources = {str(path.relative_to(root)): path.read_text() for path in python_paths + benchmark_paths}
     cpp_source = "\n".join(cpp_without_comments(source) for source in cpp_sources.values())
     forbidden_source = {name: re.findall(pattern, cpp_source) for name, pattern in FORBIDDEN_APIS.items()}
     python_calls, python_imports = inspect_python(python_sources)
-    forbidden_python = [row for row in python_calls if re.search(PYTHON_GPU_COMMUNICATION, row["call"])]
+    forbidden_python = forbidden_python_calls(python_calls)
+    reference_imports = inspect_production_reference_imports(python_sources)
     rmw_sites = inspect_rmw(cpp_sources)
     classified_rmw = all(row["pointer_provenance"] is not None for row in rmw_sites)
 
@@ -423,6 +511,7 @@ def main():
         and classified_rmw,
         "cpu_relay_mapped_handshake_load_store": bool(source_lines(cpp_sources, r"std::atomic_ref<std::uint64_t>")),
         "gloo_control_group_enforced": bool(source_lines(python_sources, r"control_group must use Gloo")),
+        "production_does_not_import_reference_modules": not reference_imports,
         "advanced_transport_compiled": any("advanced_transport" in row["mangled_name"] for row in sass_functions),
         "system_scope_instructions_present": all(value > 0 for value in scope_counts.values()),
         "resource_usage_extracted": bool(resource_functions),
@@ -453,10 +542,15 @@ def main():
             "cpp_cuda_count": len(cpp_paths),
             "python_module_count": len(python_paths),
             "benchmark_count": len(benchmark_paths),
-            "included": "All csrc implementation files, package Python modules and benchmark Python files",
+            "included": "All csrc implementation files, package Python modules, benchmark Python files and explicit reference artifacts",
             "excluded": "Tests, docs, generated results and audit tooling are not payload/API implementation",
         },
         "source_files": [{"path": path, "sha256": value} for path, value in initial_hashes.items()],
+        "policy_scope": python_policy_scope(initial_hashes),
+        "reference_artifacts": [
+            {"path": path, "sha256": initial_hashes[path], "production_cpp_policy_applied": False}
+            for path in REFERENCE_ARTIFACTS if path in initial_hashes
+        ],
         "executed_manifest_binding": {
             "path": str(manifest_path),
             "exists": manifest_path.exists(),
@@ -467,6 +561,7 @@ def main():
         "static_forbidden_api_matches": forbidden_source,
         "binary_forbidden_api_matches": forbidden_binary,
         "python_forbidden_gpu_communication_calls": forbidden_python,
+        "production_reference_module_imports": reference_imports,
         "positive_requirements": positive,
         "static_and_compiled_review_passed": static_qualified,
         "pointer_provenance": {
@@ -573,6 +668,8 @@ def main():
         "本脚本只读取已编译扩展、源码、硬件属性和已保存的计数；不发起 GPU 工作、不重置计数、不修改物理链路。旧 baseline/refactor 审计保持原样。",
         "",
         f"覆盖 {len(cpp_paths)} 个 C++/CUDA 文件、{len(python_paths)} 个 package Python 模块及 {len(benchmark_paths)} 个 benchmark 文件；包括全部高级 headers 和 NUMA relay。",
+        "",
+        "NCCL 对照入口 benchmarks/benchmark_nccl_shm.py 仅豁免 Python collective 调用检查；该文件与独立 nccl_expand 辅助源码仍绑定 manifest。生产 package 不得导入这两个参考模块；生产源码、二进制、SASS 和计数器检查不变。",
         "",
         "路径为 GPU SM → 注册的 CPU 共享 backing → 接收 GPU SM；relay 模式额外由 CPU memcpy 一次到目标 NUMA 的 replica。GPU state 内的跨 rank 地址仅来自 cudaHostGetDevicePointer，workspace/output 属于当前 GPU。",
         "",

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "reason": "All three two-round configurations completed on idle GPUs after the model service stopped.",
+  "workload": {
+    "world_size": 8,
+    "experts": 256,
+    "topk": 8,
+    "hidden": 7168,
+    "dtype": "bfloat16",
+    "tokens": [
+      16,
+      32,
+      64,
+      128,
+      256,
+      512,
+      1024,
+      2048,
+      4096,
+      8192
+    ],
+    "seed": 20261024
+  },
+  "software": {
+    "pytorch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "nccl": [
+      2,
+      29,
+      7
+    ]
+  },
+  "validation": {
+    "cpu_reference_cases": 24,
+    "cpu_tool_tests": 30,
+    "helper_cpu_model_cases": 198,
+    "cuda_initialized_by_cpu_reference": false,
+    "helper_compilation": "passed",
+    "production_compilation": "passed",
+    "gpu_correctness": "passed",
+    "formal_performance": "passed",
+    "shm_runtime_logs": "passed",
+    "formal_experiments": 3,
+    "formal_rounds": 6,
+    "rank_latency_samples": 28800,
+    "steady_trace_markers": 144,
+    "cpu_sync_in_steady_markers": 0
+  },
+  "helper_binary_sha256": "140dfb9b2d15f803a4cbd97855db38e8fe7bbe715b4a346118f158867801f417",
+  "source_sha256": {
+    "benchmarks/benchmark.py": "d5c40cbaaac870512c02c45bc6556c4ef05a97f6a830805c17d8ecd42dc139e6",
+    "benchmarks/benchmark_nccl_shm.py": "8e4502e672ea6b5e85a3aae1e2e7d5c77c653eaaa57e85950b5f07f2c350f047",
+    "benchmarks/nccl_expand.py": "26f1ca4b160d04fa3b6b1fae61c7400068566c9b231386ee023397189003655f",
+    "benchmarks/csrc/nccl_expand.cu": "f0edee182e4f5aad43c9b6d9fefeff20e85140440e7ea896f442742663312b7e"
+  }
+}

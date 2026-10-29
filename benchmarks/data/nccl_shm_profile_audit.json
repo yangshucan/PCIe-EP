@@ -1,0 +1,1442 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "trace_count": 48,
+  "steady_marker_count": 144,
+  "passed_marker_count": 144,
+  "cuda_runtime_or_driver_call_count": 3312,
+  "correlated_gpu_kernel_count": 672,
+  "cpu_synchronization_calls": [],
+  "gpu_scalar_readback_ops": [],
+  "correlated_device_to_host_memcopies": [],
+  "owned_api_counts": {
+    "cuLaunchKernelEx": 96,
+    "cudaEventRecord": 288,
+    "cudaEventRecordWithFlags": 576,
+    "cudaGetFuncBySymbol": 96,
+    "cudaLaunchKernel": 576,
+    "cudaStreamGetCaptureInfo": 192,
+    "cudaStreamIsCapturing": 1008,
+    "cudaStreamWaitEvent": 480
+  },
+  "owned_kernel_counts": {
+    "advanced_begin_epoch": 48,
+    "advanced_copy_local_tokens": 48,
+    "advanced_prepare_channels_parallel": 48,
+    "advanced_reduce_statistics": 48,
+    "advanced_route_flags": 48,
+    "advanced_stable_ordinals": 48,
+    "advanced_transport_pipelined": 48,
+    "count_expert_tiles": 48,
+    "ncclDevKernel_AllGather_RING_LL": 96,
+    "pack_tokens": 48,
+    "prefix_expert_tiles": 48,
+    "publish_counts": 48,
+    "scatter_expert_tokens": 48
+  },
+  "excluded_outside_steady_markers": {
+    "kernel": 448,
+    "cpu_sync": 144
+  },
+  "trace_records": [
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 16,
+      "rank": 0,
+      "trace_sha256": "36f77e51c7411e8431319686637c28b4369c7de383c96e59eff2932af3f4babf",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 16,
+      "rank": 1,
+      "trace_sha256": "760031fa7ed7f23679cb60b0f27ab470dd6a80a4dd3a7f873b7a0b201187662c",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 16,
+      "rank": 2,
+      "trace_sha256": "f5a7764e36426eec178a48bef6b52097c275224910c0ca99cb07df728450e595",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 16,
+      "rank": 3,
+      "trace_sha256": "255cc2deacfeb335948b0a949564468e4af74b7af6b912dcb99b7fbd11271cf8",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 16,
+      "rank": 4,
+      "trace_sha256": "c628ee9b282919e4bf67882f4c92881c5d9918f13cdeabb441c0f487601a188a",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 16,
+      "rank": 5,
+      "trace_sha256": "334ab094466b613ecd186d5c7111e0e1d4710cec881179a74f96a053e0b4b6cd",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 16,
+      "rank": 6,
+      "trace_sha256": "2186b06dcfd1718e6773bb0b4a7d908789fbfdb955e4da2759944561f711315d",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 16,
+      "rank": 7,
+      "trace_sha256": "4fc22d183a65179a63e444b1da5eafcd9ceb0c12c54debafc3a5aef4b06d7b11",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 8192,
+      "rank": 0,
+      "trace_sha256": "0d8ee64659688e7559fde70c8e8862688852f51ebd530b19dd43987ca9584363",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 8192,
+      "rank": 1,
+      "trace_sha256": "1dd43bd6eed3319d3d857819d23370dc78b3fa6ca14c67df88a9a484cf1caa93",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 8192,
+      "rank": 2,
+      "trace_sha256": "4dfcbb268cea1abf794bdeaaf532be1ce85bd0a5bc9474052801a1fdb35792ef",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 8192,
+      "rank": 3,
+      "trace_sha256": "b8efd6eadbdef06955a12218db0b12181efa94827bb57a4262096ad9f2f737a6",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 8192,
+      "rank": 4,
+      "trace_sha256": "ab64f8aef17dbed8dadfd7fdfe9840e8a29561441ef7d0c8854d270ebd3d7e67",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 8192,
+      "rank": 5,
+      "trace_sha256": "4fbe4b39f313c830152c3231b6599bc0a33bfa153d31b88f9448610ab4f1f78f",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 8192,
+      "rank": 6,
+      "trace_sha256": "227230f6eb6db6b5e5949ad2fedaca4958d72312ed60011401b100e0ba00024c",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_dispatch",
+      "tokens": 8192,
+      "rank": 7,
+      "trace_sha256": "39890fac1ff2e0466c336c556324d25a969a6480d7aeadac1d35b21c1a0353ad",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 26,
+          "kernel_count": 5,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 16,
+      "rank": 0,
+      "trace_sha256": "70c917863d08746b9cf65436a86c653cdc00160959cd5c39677cd9d8a023f1ba",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 16,
+      "rank": 1,
+      "trace_sha256": "d62f977d55b2f2b81ca60bd7087aefe27be33cb1d6ddf735a613107a2c1cfe45",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 16,
+      "rank": 2,
+      "trace_sha256": "1c560c9dca614631668eea9e9fae05692803f8f57c023c3fde1c54ae5d7b2af2",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 16,
+      "rank": 3,
+      "trace_sha256": "ac568ef132af7dbcd561244fcc2bd94a4c6ab99649a4e1362404298042302fbf",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 16,
+      "rank": 4,
+      "trace_sha256": "d7672278bb082d903a9a2f9105b7dbbe8826434a8cbcd4ebb6d3d3ddcdf3d629",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 16,
+      "rank": 5,
+      "trace_sha256": "94bc6ce12aeb8bb61048fd35e1274e41d193d2e7cca23828cda272257ed3b970",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 16,
+      "rank": 6,
+      "trace_sha256": "a615e90cd71f58555e2d73a38ded958e4306c3f873a2c16a9b178abc7c89fc3d",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 16,
+      "rank": 7,
+      "trace_sha256": "095a1f721ca507c49ffef9944a1798c2ee68c02fc9bd97dd44770af03c97dac4",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 8192,
+      "rank": 0,
+      "trace_sha256": "af1e48685fce6cdd27448370bbb0466791092eb3ca2adde63891251ca5c4d257",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 8192,
+      "rank": 1,
+      "trace_sha256": "41d9d29b5a5779331d29b6d805982244d5ddb39a156f2166d0cfc208fcaa62d4",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 8192,
+      "rank": 2,
+      "trace_sha256": "fa3085d8e2328e1b9884ef34afc9b63e40405d4cb9051a0648cf7fa5afcb84db",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 8192,
+      "rank": 3,
+      "trace_sha256": "968affff5031a2962a015c944bd5639fd8b557342dd15ee83470adbede047cb4",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 8192,
+      "rank": 4,
+      "trace_sha256": "3274939cc14dce3b0c9f53250e2dce730f6ce9f555e0d2bf4b57fc532101619d",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 8192,
+      "rank": 5,
+      "trace_sha256": "0f671216200c4dd8ee478acfecdb8d98dfc521e89a0bfc0ae541577d867e8bf2",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 8192,
+      "rank": 6,
+      "trace_sha256": "242ee28b0abb5d91a56a1355da5b0a622faa88d09ffa6605063c6e5393dcc331",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "nccl_payload",
+      "tokens": 8192,
+      "rank": 7,
+      "trace_sha256": "9128b874ce7037897abc448ea41f8484ea21a4773550380d670dfa59aada6e7b",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 22,
+          "kernel_count": 1,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 16,
+      "rank": 0,
+      "trace_sha256": "9aa66f50c5e27876bbead8dc7ce5e4df1cd4ba493ff9f0099e8d8bb049501093",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 16,
+      "rank": 1,
+      "trace_sha256": "db178cf96ee89df37ebabfd858085356a7a8a520b9a03670c5ece6d3226b99fb",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 16,
+      "rank": 2,
+      "trace_sha256": "b452cf7513d7f3d1dd6b127da9f4ea519a3fba02b9fd35cce6b26303dae0434d",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 16,
+      "rank": 3,
+      "trace_sha256": "12d8a004f7db852a745cb6ac6295d11e435f7eb0c83cbc2b66030c2c61824fda",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 16,
+      "rank": 4,
+      "trace_sha256": "ece123fd99fb7a50e7a93a952d3cb96637855f9a209e21c8e0167343ac331858",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 16,
+      "rank": 5,
+      "trace_sha256": "c3242ec2ea50f83b44a0fbad981547136b819fa8b743294a5c762079b47fba35",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 16,
+      "rank": 6,
+      "trace_sha256": "c9b4da55048fd4d4b1b1e52db86a23dd124c5fcc07e6a9d07503ffa1f71527ac",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 16,
+      "rank": 7,
+      "trace_sha256": "b21bf6ec6ba799faacee0401968bcddbe2b612621aea52a270dda10e07208990",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 8192,
+      "rank": 0,
+      "trace_sha256": "8dff534d23c1b534b80fe0e2f92c123a2bdd16feabad3e6d8ed335d083a38084",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 8192,
+      "rank": 1,
+      "trace_sha256": "3d21779fb0e738d97ca1fba2a937812163b11e7b4553c891d57b1f5959af4d5a",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 8192,
+      "rank": 2,
+      "trace_sha256": "baacd959165773d9b1bf3288819a07fc41ad758aff784c45dc792e405ed4598f",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 8192,
+      "rank": 3,
+      "trace_sha256": "66de23451555eece73985dc5a7d9672fdf59984b0ec00c3b31d96e924743d1c0",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 8192,
+      "rank": 4,
+      "trace_sha256": "358b6379992820d00cb8d9e7a541c044b2924d024147371cea216490925f267a",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 8192,
+      "rank": 5,
+      "trace_sha256": "02d1f112cdffa9fb19e82a3d22de6c94c02a5c87a9afa1608d89928413f20793",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 8192,
+      "rank": 6,
+      "trace_sha256": "59cdff530596cb16e9adbbf8c06a942853300d0b843daadfa2944f3602bb0df1",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "variant": "pcie_ep",
+      "tokens": 8192,
+      "rank": 7,
+      "trace_sha256": "9e61465c0510f7fb2448af4b4021daef58ee4f7ac073afd5b92c7ff8fe26b84f",
+      "markers": [
+        {
+          "iteration": 0,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 1,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        },
+        {
+          "iteration": 2,
+          "cuda_calls": 21,
+          "kernel_count": 8,
+          "memcopy_count": 0,
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "scope": "Diagnostic sampled steady dispatch only: T16 and T8192, three variants, eight ranks, three iterations. Formal performance remains the separate unprofiled CUDA-event runs.",
+  "attribution": "CPU operations and runtime/driver calls are selected by same process and marker timestamp interval; asynchronous GPU kernels and memory copies are attributed through the submitting runtime/driver correlation ID. Prime iterations, profiler startup/shutdown, explicit completion waits and validation outside markers are excluded.",
+  "limitations": [
+    "This checks CPU blocking synchronization APIs, GPU scalar readback operations and correlation-owned device-to-host copies in the captured markers; it does not claim absence outside the sampled path.",
+    "cudaStreamWaitEvent is a GPU stream dependency and is allowed. Mapped-host SM reads/writes are not CUDA memcpy events.",
+    "Absolute CPU/GPU timestamps, process/thread IDs, raw trace paths, hostnames and device UUIDs are omitted."
+  ]
+}

@@ -8,35 +8,11 @@ __global__ void publish_counts(DeviceState state) {
     if (state.errors[kErrorCodeField])
         return;
 
-    __shared__ int failed;
     const int thread_index = threadIdx.x;
     const std::uint64_t epoch = *state.epoch;
-    const std::uint64_t start_ns = global_time_ns();
 
-    // Counts have their own consumption handshake. Reusing a mailbox is safe
-    // only after every peer consumed the preceding epoch, including zero work.
-    if (!thread_index) {
-        failed = 0;
-        if (epoch > 1) {
-            for (int rank = 0; rank < state.layout.num_ranks; ++rank) {
-                if (rank != state.local_rank) {
-                    while (load_acquire_system(signal_value_ptr(
-                        state.mapped_source_buffers[state.local_rank], state.layout.counts_consumed_offset, rank)) != epoch - 1) {
-                        if (should_abort(state, start_ns, kErrorCountsMailboxWait)) {
-                            failed = 1;
-                            break;
-                        }
-                    }
-                    if (failed)
-                        break;
-                }
-            }
-        }
-    }
-    __syncthreads();
-    if (failed)
-        return;
-
+    // advanced_begin_epoch acquires all preceding-epoch consumption credits
+    // before any channel or total count writer runs on this stream.
     auto* published_counts = reinterpret_cast<int*>(
         state.mapped_source_buffers[state.local_rank] + state.layout.counts_offset);
     for (int index = thread_index; index < state.layout.num_ranks + state.layout.num_experts; index += blockDim.x)

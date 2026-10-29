@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "release_instrumentation": false,
+  "notes": [
+    "Formal performance uses the separate 40-sample release benchmark, not these profiler runs.",
+    "Role lifetimes overlap. Active drain time is not end-to-end drain latency.",
+    "Previous profiling used 20 iterations/rank; optimized uses 10. Both use C32 and eight ranks.",
+    "All timing statistics below are medians across rank/iteration/channel observations."
+  ],
+  "configuration": {
+    "hidden": 7168,
+    "experts": 256,
+    "topk": 8,
+    "warmup": 5,
+    "iterations": 10,
+    "stage": 6,
+    "channels": 32,
+    "warp_specialization": true,
+    "pipeline_stages": 2,
+    "fuse_receive_expand": true,
+    "receive_expand_mode": "pipelined",
+    "source_fusion": true,
+    "wire_dtype": "bf16",
+    "numa_mode": "direct",
+    "replica_slots": 256,
+    "execution_mode": "eager",
+    "payload_slots": 256,
+    "descriptor_slots": 256,
+    "alignment": 1,
+    "expand": true,
+    "seed": 20261024
+  },
+  "world_size": 8,
+  "optimized": [
+    {
+      "tokens": 16,
+      "channel_observations": 2560,
+      "tx_role_ns": 159008.0,
+      "rx_role_ns": 146304.0,
+      "tx_health_ns": 0.0,
+      "rx_health_ns": 0.0,
+      "tx_health_scans": 0.0,
+      "ack_loads": 15.5,
+      "tx_active_drain_ns": 21520.0,
+      "rx_prefix_ns": 74816.0,
+      "kernels_per_dispatch": 8,
+      "release_kernel_median_us": {
+        "advanced_begin_epoch": 6.464,
+        "advanced_route_flags": 5.024,
+        "advanced_stable_ordinals": 2.111,
+        "advanced_prepare_channels_parallel": 5.872,
+        "publish_counts": 4.832,
+        "advanced_transport_pipelined": 313.23199999999997,
+        "advanced_copy_local_tokens": 11.808,
+        "advanced_reduce_statistics": 15.9365
+      },
+      "steady_cpu_sync_audit": {
+        "status": "passed",
+        "violations": []
+      }
+    },
+    {
+      "tokens": 256,
+      "channel_observations": 2560,
+      "tx_role_ns": 855264.0,
+      "rx_role_ns": 801568.0,
+      "tx_health_ns": 0.0,
+      "rx_health_ns": 0.0,
+      "tx_health_scans": 0.0,
+      "ack_loads": 236.0,
+      "tx_active_drain_ns": 393824.0,
+      "rx_prefix_ns": 136416.0,
+      "kernels_per_dispatch": 8,
+      "release_kernel_median_us": {
+        "advanced_begin_epoch": 6.656,
+        "advanced_route_flags": 22.72,
+        "advanced_stable_ordinals": 2.768,
+        "advanced_prepare_channels_parallel": 6.816,
+        "publish_counts": 4.8965,
+        "advanced_transport_pipelined": 926.818,
+        "advanced_copy_local_tokens": 25.472,
+        "advanced_reduce_statistics": 17.68
+      },
+      "steady_cpu_sync_audit": {
+        "status": "passed",
+        "violations": []
+      }
+    },
+    {
+      "tokens": 8192,
+      "channel_observations": 2560,
+      "tx_role_ns": 25563488.0,
+      "rx_role_ns": 25207536.0,
+      "tx_health_ns": 506544.0,
+      "rx_health_ns": 0.0,
+      "tx_health_scans": 24.0,
+      "ack_loads": 5694.0,
+      "tx_active_drain_ns": 10492064.0,
+      "rx_prefix_ns": 129344.0,
+      "kernels_per_dispatch": 8,
+      "release_kernel_median_us": {
+        "advanced_begin_epoch": 6.768000000000001,
+        "advanced_route_flags": 25.905,
+        "advanced_stable_ordinals": 40.688500000000005,
+        "advanced_prepare_channels_parallel": 6.976,
+        "publish_counts": 4.864,
+        "advanced_transport_pipelined": 25998.2925,
+        "advanced_copy_local_tokens": 342.896,
+        "advanced_reduce_statistics": 22.528
+      },
+      "steady_cpu_sync_audit": {
+        "status": "passed",
+        "violations": []
+      }
+    }
+  ],
+  "previous_role_profile": [
+    {
+      "tokens": 16,
+      "channel_observations": 5120,
+      "tx_health_ns": 0.0,
+      "rx_health_ns": 0.0,
+      "ack_loads": 21.0,
+      "tx_active_drain_ns": 77488.0,
+      "rx_prefix_ns": 409488.0
+    },
+    {
+      "tokens": 256,
+      "channel_observations": 5120,
+      "tx_health_ns": 0.0,
+      "rx_health_ns": 381120.0,
+      "ack_loads": 697.0,
+      "tx_active_drain_ns": 1318288.0,
+      "rx_prefix_ns": 440768.0
+    },
+    {
+      "tokens": 8192,
+      "channel_observations": 5120,
+      "tx_health_ns": 423056.0,
+      "rx_health_ns": 15777424.0,
+      "ack_loads": 17397.0,
+      "tx_active_drain_ns": 32937600.0,
+      "rx_prefix_ns": 548624.0
+    }
+  ]
+}

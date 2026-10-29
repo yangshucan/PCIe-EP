@@ -30,6 +30,9 @@ class HostStagedEPHandle:
             expanded receives. Column zero counts conservative receive/scatter
             overlap; column one is an internal completed-ticket marker.
             Scalar/unique paths return None.
+        profiling: optional CUDA int64 [channels, 11, 32] role diagnostics from
+            a PCIE_EP_PROFILE=1 build. Read only successful pipelined expanded
+            dispatches after completion; the default build returns None.
         completion: EventOverlap for stream ordering and deferred returns.
 
     This backend deliberately has no CPU count list. Eager result pools
@@ -71,6 +74,7 @@ class HostStagedEPHandle:
         self.transport_timestamps_ns = result.get("transport_timestamps_ns")
         self.receive_expand_overlap = result.get("receive_expand_overlap")
         self.prefix_tx_timestamps_ns = result.get("prefix_tx_timestamps_ns")
+        self.profiling = result.get("profiling")
         self.expanded_count = result["expanded_count"]
         self.num_recv_tokens = self.unique_count
         self.num_expanded_tokens = self.expanded_count

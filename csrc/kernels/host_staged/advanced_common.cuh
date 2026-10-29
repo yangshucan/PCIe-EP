@@ -121,7 +121,64 @@ struct AdvancedDeviceState {
     std::uint64_t rx_delay_ns;
     std::uint64_t scatter_delay_ns;
     std::uint64_t prefix_delay_ns;
+    std::uint64_t control_abort_after_ns;
+    int counts_ack_skip_source;
+#if PCIE_EP_ENABLE_PROFILING
+    std::int64_t* profiling;
+#endif
 };
+
+#if PCIE_EP_ENABLE_PROFILING
+// Per-channel rows follow the pipelined kernel's 11 warp roles. Each row has
+// one lane-0 writer and is flushed only on role exit. Durations overlap across
+// roles; they must never be added as if they were exclusive kernel phases.
+constexpr int kNumTransportProfileRoles = 11;
+constexpr int kNumTransportProfileFields = 32;
+constexpr int kTransportProfileSampleStride = 32;
+enum TransportProfileField : int {
+    kProfileEnterNs = 0, kProfileExitNs, kProfileTotalNs,
+    kProfileIterations, kProfileWorkSamples, kProfileWorkNs, kProfileFenceNs, kProfileWorkAndFenceNs,
+    kProfileFirstPublicationNs, kProfileLastPublicationNs,
+    kProfileFailedNs, kProfileFailedCalls, kProfileFailedSignalLoads,
+    kProfileDrainedNs, kProfileDrainedCalls, kProfileDrainedSamples,
+    kProfileDrainedAckLoads, kProfileDrainedRelayLoads,
+    kProfileDescriptorProbeNs, kProfileDescriptorProbeCalls, kProfileDescriptorProbeSamples,
+    kProfileDescriptorNotReady, kProfileLocalStageBusy,
+    kProfileTxFinishedNs, kProfileRxFinishedNs, kProfilePrefixWaitNs,
+    kProfileAvailableNs, kProfileAvailableCalls, kProfileItems,
+    kProfilePublications, kProfileSampleStride, kProfileAvailableSamples,
+};
+// Role 0 uses this otherwise RX-only event slot for guardian verification.
+constexpr int kProfileAbortObservedNs = kProfileRxFinishedNs;
+
+__device__ __forceinline__ std::uint64_t transport_profile_clock() {
+    std::uint64_t timestamp;
+    // A compiler ordering boundary only: no GPU fence/barrier is introduced.
+    asm volatile("mov.u64 %0, %%globaltimer;" : "=l"(timestamp) :: "memory");
+    return timestamp;
+}
+
+struct TransportProfile {
+    std::uint64_t values[kNumTransportProfileFields] = {};
+
+    __device__ __forceinline__ void record_work(std::uint64_t begin, std::uint64_t copied, std::uint64_t fenced) {
+        ++values[kProfileWorkSamples];
+        values[kProfileWorkNs] += copied - begin;
+        values[kProfileFenceNs] += fenced - copied;
+        values[kProfileWorkAndFenceNs] += fenced - begin;
+    }
+
+    __device__ __forceinline__ void save(AdvancedDeviceState& state, int channel, int role) {
+        values[kProfileExitNs] = transport_profile_clock();
+        values[kProfileTotalNs] = values[kProfileExitNs] - values[kProfileEnterNs];
+        values[kProfileSampleStride] = kTransportProfileSampleStride;
+        auto* output = state.profiling + (channel * kNumTransportProfileRoles + role) * kNumTransportProfileFields;
+        #pragma unroll
+        for (int field = 0; field < kNumTransportProfileFields; ++field)
+            output[field] = values[field];
+    }
+};
+#endif
 
 __device__ inline int local_load(int* address) {
     return cuda::atomic_ref<int, cuda::thread_scope_block>(*address).load(cuda::memory_order_acquire);
@@ -239,18 +296,34 @@ __device__ inline void advanced_record_error(AdvancedDeviceState& state, int cod
 
 // Only a channel's TX-control leader writes its mapped channel-abort signal.
 // CPU relay failures have their own per-worker single-writer signal array.
-__device__ inline bool advanced_any_abort(AdvancedDeviceState& state) {
+__device__ inline bool advanced_any_abort(AdvancedDeviceState& state
+#if PCIE_EP_ENABLE_PROFILING
+    , std::uint64_t* signal_loads = nullptr
+#endif
+) {
     for (int rank = 0; rank < state.base.layout.num_ranks; ++rank) {
+#if PCIE_EP_ENABLE_PROFILING
+        if (signal_loads)
+            ++*signal_loads;
+#endif
         if (load_acquire_system(signal_value_ptr(state.base.mapped_source_buffers[rank],
                 state.base.layout.abort_offset)))
             return true;
         for (int channel = 0; channel < state.channels; ++channel) {
+#if PCIE_EP_ENABLE_PROFILING
+            if (signal_loads)
+                ++*signal_loads;
+#endif
             if (load_acquire_system(signal_value_ptr(state.base.mapped_source_buffers[rank],
                 state.shared.channel_abort_offset, channel)))
                 return true;
         }
         if (state.numa_mode) {
             for (int index = 0; index < state.channels * state.num_numa_nodes; ++index) {
+#if PCIE_EP_ENABLE_PROFILING
+                if (signal_loads)
+                    ++*signal_loads;
+#endif
                 if (load_acquire_system(signal_value_ptr(state.base.mapped_source_buffers[rank],
                     state.shared.relay_failed_offset, index)))
                     return true;
@@ -260,8 +333,99 @@ __device__ inline bool advanced_any_abort(AdvancedDeviceState& state) {
     return false;
 }
 
-__device__ inline bool advanced_failed(AdvancedDeviceState& state, std::uint64_t start_ns) {
-    return advanced_any_abort(state) || global_time_ns() - start_ns > state.base.timeout_ns;
+__device__ inline bool advanced_failed(AdvancedDeviceState& state, std::uint64_t start_ns
+#if PCIE_EP_ENABLE_PROFILING
+    , std::uint64_t* signal_loads = nullptr
+#endif
+) {
+    return advanced_any_abort(state
+#if PCIE_EP_ENABLE_PROFILING
+        , signal_loads
+#endif
+    ) || global_time_ns() - start_ns > state.base.timeout_ns;
 }
+
+// All lanes participate. Each lane issues independent system-scope loads;
+// the vote joins them before the leader publishes a device-local verdict.
+__device__ inline bool advanced_any_abort_warp(AdvancedDeviceState& state, int lane
+#if PCIE_EP_ENABLE_PROFILING
+    , std::uint64_t* signal_loads = nullptr
+#endif
+) {
+    const int flags_per_rank = 1 + state.channels +
+        (state.numa_mode ? state.channels * state.num_numa_nodes : 0);
+    const int num_flags = state.base.layout.num_ranks * flags_per_rank;
+    bool aborted = false;
+#if PCIE_EP_ENABLE_PROFILING
+    unsigned loads = 0;
+#endif
+    for (int index = lane; index < num_flags; index += 32) {
+        auto* segment = state.base.mapped_source_buffers[index / flags_per_rank];
+        const int flag = index % flags_per_rank;
+        auto* signal = flag == 0 ? signal_value_ptr(segment, state.base.layout.abort_offset) :
+            flag <= state.channels ? signal_value_ptr(segment, state.shared.channel_abort_offset, flag - 1) :
+            signal_value_ptr(segment, state.shared.relay_failed_offset, flag - 1 - state.channels);
+        aborted |= load_acquire_system(signal) != 0;
+#if PCIE_EP_ENABLE_PROFILING
+        ++loads;
+#endif
+    }
+#if PCIE_EP_ENABLE_PROFILING
+    if (signal_loads)
+        *signal_loads = __reduce_add_sync(0xffffffffu, loads);
+#endif
+    return __any_sync(0xffffffffu, aborted);
+}
+
+struct AdvancedHealthCheck {
+    std::uint64_t start_ns;
+    std::uint64_t next_scan_ns;
+    std::uint64_t interval_ns;
+
+    __device__ AdvancedHealthCheck(const AdvancedDeviceState& state, std::uint64_t start)
+        : start_ns(start) {
+        constexpr std::uint64_t kMaxIntervalNs = 1000000;
+        const auto timeout_interval = state.base.timeout_ns / 8;
+        interval_ns = timeout_interval < kMaxIntervalNs ? timeout_interval : kMaxIntervalNs;
+        next_scan_ns = start + interval_ns;
+    }
+
+    // Local timeout is checked on every bounded control iteration. Remote
+    // scans use wall time, so a faster idle loop cannot increase flag traffic.
+    __device__ inline bool poll(AdvancedDeviceState& state, int lane
+#if PCIE_EP_ENABLE_PROFILING
+        , TransportProfile* profile = nullptr
+#endif
+    ) {
+        int action = 0;
+        if (!lane) {
+            const auto now = global_time_ns();
+            action = now - start_ns > state.base.timeout_ns ? 2 : now >= next_scan_ns;
+        }
+        action = __shfl_sync(0xffffffffu, action, 0);
+        if (action != 1)
+            return action == 2;
+#if PCIE_EP_ENABLE_PROFILING
+        const auto begin = !lane && profile ? transport_profile_clock() : 0;
+        std::uint64_t loads = 0;
+        const bool failed = advanced_any_abort_warp(state, lane, &loads);
+#else
+        const bool failed = advanced_any_abort_warp(state, lane);
+#endif
+        if (!lane) {
+            const auto completed = global_time_ns();
+            // Restart at completion; never catch up missed scan deadlines.
+            next_scan_ns = completed + interval_ns;
+#if PCIE_EP_ENABLE_PROFILING
+            if (profile) {
+                profile->values[kProfileFailedNs] += transport_profile_clock() - begin;
+                ++profile->values[kProfileFailedCalls];
+                profile->values[kProfileFailedSignalLoads] += loads;
+            }
+#endif
+        }
+        return failed;
+    }
+};
 
 }  // namespace pcie_ep::host_staged

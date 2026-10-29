@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "world_size": 8,
+  "suites": [
+    {
+      "suite": "control_final",
+      "status": "passed",
+      "records": 49,
+      "world_size": 8,
+      "hidden": 256,
+      "cases": {
+        "remote_abort": 6,
+        "prefix_timeout": 2,
+        "mailbox_timeout": 2,
+        "bounded_ring_success": 36,
+        "asynchronous_submit": 3
+      },
+      "watchdog_seconds": 2.0
+    },
+    {
+      "suite": "prefix_final",
+      "status": "passed",
+      "records": 58,
+      "world_size": 8,
+      "hidden": 7168
+    },
+    {
+      "suite": "f2_final",
+      "status": "passed",
+      "records": 212,
+      "world_size": 8
+    },
+    {
+      "suite": "buffers_final",
+      "status": "passed",
+      "records": 4,
+      "world_size": 8
+    },
+    {
+      "suite": "consumer_final",
+      "status": "passed",
+      "records": 2,
+      "world_size": 8
+    },
+    {
+      "suite": "relay_final",
+      "status": "passed",
+      "records": 18,
+      "world_size": 8
+    },
+    {
+      "suite": "large_final",
+      "status": "passed",
+      "records": 16,
+      "world_size": 8,
+      "hidden": 7168,
+      "tokens_per_rank": 8192,
+      "bf16_elements_checked": 6247485440,
+      "per_mode_elements": {
+        "unique": 2489389056,
+        "expanded": 3758096384
+      }
+    },
+    {
+      "suite": "guardian_profile_final",
+      "status": "passed",
+      "records": 2,
+      "world_size": 8,
+      "hidden": 256,
+      "observer_durations": [
+        {
+          "channels": 1,
+          "tx_finished_to_abort_ms": 21.042368,
+          "abort_to_exit_us": 1.408
+        },
+        {
+          "channels": 32,
+          "tx_finished_to_abort_ms": 20.387264,
+          "abort_to_exit_us": 1.536
+        }
+      ],
+      "note": "Same-GPU elapsed intervals only; no cross-GPU timestamp subtraction."
+    },
+    {
+      "suite": "homogeneous_final",
+      "status": "passed",
+      "records": 11,
+      "world_size": 2
+    },
+    {
+      "suite": "single_rank_final",
+      "status": "passed",
+      "records": 11,
+      "world_size": 1
+    }
+  ],
+  "stress": {
+    "status": "passed",
+    "hidden": 7168,
+    "configurations": [
+      {
+        "payload_slots": 1,
+        "descriptor_slots": 2,
+        "dispatches_per_rank": 1000
+      },
+      {
+        "payload_slots": 2,
+        "descriptor_slots": 1,
+        "dispatches_per_rank": 1000
+      },
+      {
+        "payload_slots": 3,
+        "descriptor_slots": 2,
+        "dispatches_per_rank": 1000
+      }
+    ],
+    "total_dispatches_per_rank": 3000
+  },
+  "cpu_tests": {
+    "status": "passed",
+    "tests": 65
+  },
+  "report_recomputation": {
+    "status": "passed",
+    "invalid_inputs_rejected": 10,
+    "invalid_sha256_rejected": 4,
+    "anonymous_cli_roundtrip_identical": true
+  },
+  "no_cpu_sync": {
+    "status": "passed",
+    "eager": {
+      "batches": [
+        16,
+        256,
+        8192
+      ],
+      "ranks": 8,
+      "iterations_per_rank": 10,
+      "violations": 0
+    },
+    "graph_cached": {
+      "ranks": 8,
+      "reports": 8,
+      "violations": 0
+    },
+    "scope": "Sampled steady dispatch only; setup, profiler lifecycle and diagnostics excluded."
+  },
+  "pcie_path_audit": {
+    "status": "passed",
+    "executed_manifest_matches": true,
+    "positive_requirements": {
+      "registered_shared_cpu_backing": true,
+      "mapped_aliases_bound_to_kernel_state": true,
+      "current_gpu_output_and_input_validation": true,
+      "mapped_signals_only_acquire_load_release_store": true,
+      "cpu_relay_mapped_handshake_load_store": true,
+      "gloo_control_group_enforced": true,
+      "advanced_transport_compiled": true,
+      "system_scope_instructions_present": true,
+      "resource_usage_extracted": true,
+      "cuda_13_compiler": true,
+      "cpp_20_actual_build_flags": true,
+      "sm90_actual_build_flags": true,
+      "eight_sm90_gpus_with_132_sms": true
+    },
+    "no_forbidden_api_matches": true,
+    "runtime_binary_sha256": "c6871b921f7f297994a847919077f09f3883ee809a8f8bf70acc90eb3f783d1c",
+    "sass_sha256": "7a85e822af677b0e11a2fb7366f7270da224500bf6bc29f2d7aa9a0f2107823b",
+    "system_scope_instruction_counts": {
+      "STRONG.SYS": 143,
+      "MEMBAR.ALL.SYS": 58,
+      "MEMBAR.SC.SYS": 21
+    },
+    "pipelined_resources": {
+      "REG": 72,
+      "STACK": 960,
+      "SHARED": 1024,
+      "LOCAL": 0,
+      "TEXTURE": 0,
+      "SURFACE": 0,
+      "SAMPLER": 0
+    },
+    "nvlink": {
+      "counter_values": 288,
+      "complete": true,
+      "all_payload_deltas_zero": true,
+      "physically_disabled": false,
+      "resolution": "KiB payload counters; no PCIe/UPI traffic measurement."
+    }
+  },
+  "canonical_directory_smoke": {
+    "status": "passed",
+    "world_size": 8,
+    "channels": 32,
+    "hidden": 7168,
+    "records": 11,
+    "default_release_cache_rebuilt": true
+  }
+}

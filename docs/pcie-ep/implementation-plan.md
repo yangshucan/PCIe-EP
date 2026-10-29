@@ -2,6 +2,8 @@
 
 > 2026-10-26：本文的阶段拆分保留为设计推导，不代表仓库仍保存多套历史实现。当前只有一个 native runtime，S1–S4 Runtime、整批传输、S5 串行布局均已移除；默认使用 C32/pipelined F2。当前支持与清理范围见 [CLEANUP.md](../../CLEANUP.md) 和 [API.md](../../API.md)。
 
+2026-10-29：S5–S8 之后，已根据 [profiling 改进方案](dispatch-profiling-20261029.md) 完成 P0 控制路径优化和 P1 counts mailbox guard 合并：TX guardian 负责 warp 协作健康检查，tail ACK 增量排空，旧 counts mailbox 在 `begin_epoch` 一次性检查。PCIe-only、稳定输出顺序和主路径无 CPU 同步保持不变。协议与验证见 [control-progress](control-progress.md)，当前十档性能见 [RESULTS_CONTROL_PROGRESS.md](../../RESULTS_CONTROL_PROGRESS.md)。扩大 channel 上限与 RX 数据通路等后续方案尚未实现。
+
 本文件规定开发顺序；[design.md](./design.md) 保留最终协议与优化细节。阶段编号统一使用 S0–S8，替代此前按组件划分的 M0–M6；F1/F2/F3 与 R0–R3 仅作为 fusion/relay 子任务名。S0–S4 已完成目标机器测试，原始结果保留在 [RESULTS.md](../../RESULTS_F2.md)。2026-10-25 已按阶段落地 S5–S8 的独立路径；实际配置、协议实现与测量口径见 [advanced-implementation.md](./advanced-implementation.md)，新验收和性能数据保存在 `results/s5_s8/`。
 
 S4 的 thread 0 控制、全 CTA 顺序搬运保持为参考。S5 新增真正的 control/metadata、TX、RX warp 并发流水；S6 并行稳定布局、F3、缓存和 Graph 分别开关；S7 使用可选 FP8 wire；S8 增加 CPU relay。阶段开关与原有路径并存。
@@ -116,7 +118,7 @@ F2 已按两个增量落地并各自保留开关：
 - `receive_expand_mode="vectorized"`：同组 3 个 RX warp 仍依次接收和展开，shared→expert 使用 uint4，H%8 非零时整体标量回退。
 - `receive_expand_mode="pipelined"`：复用 vector scatter，RX warp 5–7 只接收，新增 warp 8–10 专做展开；shared 双/三 stage 经 generation READY 和独立 reader/scatter 完成条件回收。
 
-新增实现、混合 buffer 初始化回归见 [F2 实现补充](./f2-receive-expand.md)；[实际结果](../../RESULTS_F2.md)仅列最新流水版，带宽按 `T*K*H*b/t` 计算。S5–S8 阶段编号保持不变。
+新增实现、混合 buffer 初始化回归见 [F2 实现补充](./f2-receive-expand.md)；[F2 历史结果](../../RESULTS_F2.md)保留最初流水版测量，[当前结果](../../RESULTS_CONTROL_PROGRESS.md)包含后续控制路径优化，带宽均按 `T*K*H*b/t` 计算。S5–S8 阶段编号保持不变。
 
 ### 8.1 Warp specialization 的角色与交接
 

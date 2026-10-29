@@ -8,6 +8,10 @@ The Python API follows DeepEP V2.5's `EPBuffer`, `EPHandle`, and `EventOverlap` 
 
 The default configuration is C32, source fusion, warp specialization and pipelined receive expansion. A 256-thread initialization CTA clears diagnostics and checks terminal flags in parallel. Receive count/prefix preparation runs in a resident RX-control warp while TX proceeds; final source/expert token ordering is unchanged. See [prefix/TX overlap](docs/pcie-ep/prefix-tx-overlap.md). Stage numbers 6/7/8 select capability gates on this same runtime; stages 1–5 are retired and rejected.
 
+The current control path uses cooperative warp health checks, a TX guardian that stays alive through RX completion, incremental tail-ACK draining, and one previous-count-mailbox guard in `begin_epoch`. The [latest ten-batch comparison](RESULTS_CONTROL_PROGRESS.md) measures these changes against a fresh baseline; [control progress](docs/pcie-ep/control-progress.md) describes the protocol. The earlier [dispatch profiling report](docs/pcie-ep/dispatch-profiling-20261029.md) records the measurements and causal experiments behind this work. [GPU role instrumentation](docs/pcie-ep/profiling-instrumentation.md) is opt-in at compile time; the default build omits its GPU counters and allocations.
+
+The latest [fixed nonuniform top-4 NCCL SHM comparison](RESULTS_NCCL_SHM_TOP4.md) freezes concrete expert IDs and weights for all implementations and both rounds. It includes a synthetic profile calibrated to published NVIDIA expert-load statistics and a 20%/80% hotspot case. Both favor NCCL for T≤128 and PCIe-EP for T≥256; at T8192, PCIe-EP is 1.661x / 1.600x faster than the expert-ready NCCL baseline. The earlier [uniform top-8 comparison](RESULTS_NCCL_SHM.md) remains separately identified. The reference NCCL group and expansion module are separate from the production payload runtime.
+
 ## Configuration and use
 
 Use one process per GPU and set its CUDA device before constructing a buffer. The benchmark uses eight Gloo ranks as both DP-attention sources and EP participants. It measures dispatch; attention and expert GEMMs are outside this implementation.
@@ -43,7 +47,7 @@ with HostStagedEPBuffer(
     # Expert kernels consume GPU expert_counts/expert_offsets and valid rows.
 ```
 
-`receive_expand_mode="pipelined"` uses three dedicated scatter warps in addition to the original eight. `"vectorized"` keeps the original RX roles and uses 16-byte shared→expert copies; `"scalar"` remains an explicitly selected diagnostic variant. `"pipelined"` is the default. Unique dispatch keeps its original path. See [F2 implementation](docs/pcie-ep/f2-receive-expand.md) and [the latest prefix/TX-overlap measurements](RESULTS_PREFIX_TX.md).
+`receive_expand_mode="pipelined"` uses three dedicated scatter warps in addition to the original eight. `"vectorized"` keeps the original RX roles and uses 16-byte shared→expert copies; `"scalar"` remains an explicitly selected diagnostic variant. `"pipelined"` is the default. Unique dispatch keeps its original path. See [F2 implementation](docs/pcie-ep/f2-receive-expand.md) and [the latest control-path measurements](RESULTS_CONTROL_PROGRESS.md).
 
 `do_cpu_sync=False` is mandatory; `None` means False. Normal dispatch/replay does not read counts back to the CPU or wait for GPU completion. Initialization, explicit capture preparation, collective close, and `check_errors()` may synchronize and belong outside the steady path.
 
@@ -74,7 +78,7 @@ bash scripts/validate_f2.sh all
 PCIE_EP_F2_RUN_ID=my_run bash scripts/benchmark_f2.sh all
 python3 benchmarks/report_latest.py --run-dir results/f2/runs/my_run
 python3 benchmarks/report_prefix_tx.py --samples benchmarks/data/prefix_tx_samples.json --output-dir /tmp/prefix_tx_report
-
+python3 benchmarks/report_control_progress.py --samples benchmarks/data/control_progress_samples.json --output-dir /tmp/control_progress_report
 ```
 
 Advanced validation includes CPU unit tests, independent distributed BF16/FP8 reference checks, cache/Graph and relay combinations, forced writer/reader delays, bounded-ring stress, full-payload T8192 checks, stream/pool/communicator/error lifetime tests, and profiler audits. The stress iteration count can be changed with `PCIE_EP_F2_STRESS_ITERATIONS`; results record the actual count. Retired stage 1–5 executables and historical report generators have been removed; see [cleanup scope](CLEANUP.md).
@@ -85,7 +89,7 @@ The requested workload is DP8/EP8, 256 experts (32 consecutive experts per GPU),
 
 Full dispatch latency is measured with same-device CUDA events, then each round takes the maximum across eight ranks. Layout, counts/prefix, transport, local expansion and stream waiting are included. Transport timestamps span the earliest channel start through the latest channel completion on each GPU; the interval includes polling and backpressure. No cross-GPU clocks are subtracted.
 
-The current comparison uses the requested formula `bandwidth = T*K*H*b/t`: T is input tokens per GPU, K=8, H=7168, b=2 bytes for BF16, and t is full mean dispatch latency in seconds. Divide bytes/second by 1e9 for decimal GB/s. This per-GPU logical byte count is before deduplication, includes all top-k branches, and has no extra world-size factor. [The latest report](RESULTS_PREFIX_TX.md) compares the previous and optimized pipelined implementations.
+The current comparison uses the requested formula `bandwidth = T*K*H*b/t`: T is input tokens per GPU, K=8, H=7168, b=2 bytes for BF16, and t is full mean dispatch latency in seconds. Divide bytes/second by 1e9 for decimal GB/s. This per-GPU logical byte count is before deduplication, includes all top-k branches, and has no extra world-size factor. [The latest report](RESULTS_CONTROL_PROGRESS.md) compares the previous and optimized pipelined implementations.
 
 Historical raw files retain their original byte counters and bandwidth fields for traceability. For payload bytes B, U counts source tokens with a remote destination, F counts deduplicated remote token/destination-GPU pairs, and R counts relay token/target-NUMA copies, summed across eight GPUs:
 
@@ -101,10 +105,10 @@ NCCL P2P/SHM/NVLS/MNNVL are disabled and Socket networking is selected for contr
 
 The supported scope is one machine, one GPU/process, P≤16, top-k≤32, up to 32 independent channels, contiguous BF16 input, int64 routes, optional FP32 weights, consecutive uniform expert ownership, and alignment 1–256. Epoch exhaustion and invalid routes cause terminal errors and require rebuilding the buffer. Combine/backward, dynamic owner maps, cross-node transport, automatic direct/relay selection and concurrent CPU submissions are outside this version.
 
-[RESULTS_F2.md](RESULTS_F2.md) contains only the latest pipelined implementation for all ten batches, using `T*K*H*b/t`. Anonymous rank timings and recalculated JSON/CSV are included in `benchmarks/data/`:
+[RESULTS_CONTROL_PROGRESS.md](RESULTS_CONTROL_PROGRESS.md) contains the current implementation's ten-batch comparison, using `T*K*H*b/t`. Anonymous rank timings and recalculated JSON/CSV are included in `benchmarks/data/`:
 
 ```bash
-python3 benchmarks/report_latest.py
+python3 benchmarks/report_control_progress.py --samples benchmarks/data/control_progress_samples.json --output-dir /tmp/control_progress_report
 ```
 
-Machine-specific raw logs, traces, native binaries, topology dumps and historical experiment archives are excluded from Git. They can be generated locally by the validation and benchmark scripts. The numerical results are an anonymous export of the completed GPU measurements; this publication did not rerun GPU experiments. The retained measurements identify their original measured source in `benchmarks/data/f2_measured_runtime_source_sha256.json`. The current runtime was subsequently cleaned and revalidated; that historical fingerprint does not describe the cleaned source. See [cleanup scope](CLEANUP.md).
+Machine-specific raw logs, traces, native binaries, topology dumps and historical experiment archives are excluded from Git. They can be generated locally by the validation and benchmark scripts. The current report uses two newly measured rounds per version and identifies their runtime sources in `benchmarks/data/control_progress_runtime_sha256.json`. [RESULTS_PREFIX_TX.md](RESULTS_PREFIX_TX.md) and [RESULTS_F2.md](RESULTS_F2.md) retain earlier measurements and their original source fingerprints for traceability. See [cleanup scope](CLEANUP.md).

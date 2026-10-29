@@ -186,7 +186,11 @@ __device__ inline bool tx_payload_available(
     return true;
 }
 
-__device__ inline bool tx_drained(AdvancedDeviceState& state, int channel, int produced) {
+__device__ inline bool tx_drained(AdvancedDeviceState& state, int channel, int produced
+#if PCIE_EP_ENABLE_PROFILING
+    , std::uint64_t* ack_loads = nullptr, std::uint64_t* relay_loads = nullptr
+#endif
+) {
     const int slots = state.base.layout.num_payload_slots;
     const auto epoch = *state.base.epoch;
     auto* own = state.base.mapped_source_buffers[state.base.local_rank];
@@ -194,16 +198,26 @@ __device__ inline bool tx_drained(AdvancedDeviceState& state, int channel, int p
         const int token = state.channel_remote_indices[channel * state.base.layout.num_max_tokens_per_rank + ordinal];
         const auto targets = advanced_endpoint_mask(state, state.base.route_plan[token].destination_mask);
         for (int endpoint = 0; endpoint < state.shared.num_endpoints; ++endpoint) {
-            if ((targets & (1ull << endpoint)) && load_acquire_system(signal_value_ptr(own,
-                state.shared.source_ack_offset, (channel * slots + ordinal % slots) * state.shared.num_endpoints + endpoint)) !=
-                advanced_sequence(epoch, token))
-                return false;
+            if (targets & (1ull << endpoint)) {
+#if PCIE_EP_ENABLE_PROFILING
+                if (ack_loads)
+                    ++*ack_loads;
+#endif
+                if (load_acquire_system(signal_value_ptr(own, state.shared.source_ack_offset,
+                        (channel * slots + ordinal % slots) * state.shared.num_endpoints + endpoint)) !=
+                    advanced_sequence(epoch, token))
+                    return false;
+            }
         }
     }
     if (state.numa_mode) {
         for (int node = 0; node < state.num_numa_nodes; ++node) {
             // Even a zero-work relay flow must acquire and consume this epoch's
             // endpoint counts before a later dispatch may overwrite its mailbox.
+#if PCIE_EP_ENABLE_PROFILING
+            if (relay_loads)
+                ++*relay_loads;
+#endif
             if (load_acquire_system(signal_value_ptr(own, state.shared.relay_drained_offset,
                     channel * state.num_numa_nodes + node)) != epoch)
                 return false;
@@ -212,23 +226,96 @@ __device__ inline bool tx_drained(AdvancedDeviceState& state, int channel, int p
     return true;
 }
 
+struct AdvancedTxDrain {
+    int ordinal;
+    std::uint64_t pending_endpoints = 0;
+    std::uint64_t pending_relays;
+    std::uint64_t sequence = 0;
+    std::uint64_t next_poll_ns = 0;
+
+    __device__ AdvancedTxDrain(const AdvancedDeviceState& state, int produced)
+        : ordinal(max(0, produced - state.base.layout.num_payload_slots)),
+          pending_relays(state.numa_mode ? (1ull << state.num_numa_nodes) - 1 : 0) {}
+
+    // At most one mapped load per call. Confirmed ACKs never need re-reading
+    // once all tokens are published: the next epoch cannot reuse these slots
+    // until this transport has completed. Earlier slots were checked at reuse.
+    __device__ bool progress(AdvancedDeviceState& state, int channel, int produced
+#if PCIE_EP_ENABLE_PROFILING
+        , std::uint64_t* ack_loads, std::uint64_t* relay_loads
+#endif
+    ) {
+        auto* own = state.base.mapped_source_buffers[state.base.local_rank];
+        bool arrived = true;
+        if (ordinal < produced) {
+            if (!pending_endpoints) {
+                const int token = state.channel_remote_indices[channel * state.base.layout.num_max_tokens_per_rank + ordinal];
+                pending_endpoints = advanced_endpoint_mask(state, state.base.route_plan[token].destination_mask);
+                sequence = advanced_sequence(*state.base.epoch, token);
+            }
+            if (pending_endpoints) {
+                const int endpoint = __ffsll(pending_endpoints) - 1;
+                auto* ack = signal_value_ptr(own, state.shared.source_ack_offset,
+                    (channel * state.base.layout.num_payload_slots + ordinal % state.base.layout.num_payload_slots) *
+                        state.shared.num_endpoints + endpoint);
+#if PCIE_EP_ENABLE_PROFILING
+                ++*ack_loads;
+#endif
+                arrived = load_acquire_system(ack) == sequence;
+                if (arrived)
+                    pending_endpoints &= ~(1ull << endpoint);
+            }
+            if (!pending_endpoints)
+                ++ordinal;
+        } else if (pending_relays) {
+            const int node = __ffsll(pending_relays) - 1;
+#if PCIE_EP_ENABLE_PROFILING
+            ++*relay_loads;
+#endif
+            arrived = load_acquire_system(signal_value_ptr(own, state.shared.relay_drained_offset,
+                channel * state.num_numa_nodes + node)) == *state.base.epoch;
+            if (arrived)
+                pending_relays &= ~(1ull << node);
+        }
+        // A missing tail ACK has no new-send credit to unblock. Back off while
+        // the guardian continues its independent local-time/health checks.
+        next_poll_ns = arrived ? 0 : global_time_ns() + 1000;
+        return ordinal == produced && !pending_relays;
+    }
+};
+
 __device__ void advanced_tx_control(AdvancedDeviceState state, AdvancedLocalQueues& queues, int channel, int lane) {
     int reserved[kNumMaxEndpoints] = {};
-    int prepared = 0, published = 0, rounds = 0;
+    int prepared = 0, published = 0;
     const int num_tokens = state.channel_num_remote_tokens[channel];
     const auto epoch = *state.base.epoch;
     const auto start = global_time_ns();
+    AdvancedHealthCheck health(state, start);
+    AdvancedTxDrain drain(state, num_tokens);
     auto* statistics = state.channel_statistics + channel * kNumStatisticsFields;
     auto* own = state.base.mapped_source_buffers[state.base.local_rank];
+#if PCIE_EP_ENABLE_PROFILING
+    TransportProfile profile;
+    if (!lane) {
+        profile.values[kProfileEnterNs] = start;
+        profile.values[kProfileItems] = num_tokens;
+    }
+#endif
     if (!lane)
         state.channel_timestamps_ns[channel * 2] = start;
 
     while (true) {
         if (!lane) {
+#if PCIE_EP_ENABLE_PROFILING
+            ++profile.values[kProfileIterations];
+#endif
             queues.tx_action = 0;
             if (local_load(&queues.abort)) {
-                store_release_system(signal_value_ptr(own, state.shared.channel_abort_offset, channel), epoch);
                 local_store(&queues.tx_finished, 1);
+#if PCIE_EP_ENABLE_PROFILING
+                if (!profile.values[kProfileTxFinishedNs])
+                    profile.values[kProfileTxFinishedNs] = transport_profile_clock();
+#endif
                 queues.tx_action = -1;
             } else {
                 // Publish strictly in reservation order, after every worker
@@ -251,6 +338,13 @@ __device__ void advanced_tx_control(AdvancedDeviceState state, AdvancedLocalQueu
                                 statistics[7]++;
                             }
                         }
+#if PCIE_EP_ENABLE_PROFILING
+                        if (!published)
+                            profile.values[kProfileFirstPublicationNs] = transport_profile_clock();
+                        if (published + 1 == num_tokens)
+                            profile.values[kProfileLastPublicationNs] = transport_profile_clock();
+                        ++profile.values[kProfilePublications];
+#endif
                         statistics[kNumHostPayloadWritesField]++;
                         statistics[kNumDescriptorsPublishedField] += __popcll(stage.metadata.destination_mask & ~(1ull << state.base.local_rank));
                         local_store(&stage.ready, 0);
@@ -260,7 +354,20 @@ __device__ void advanced_tx_control(AdvancedDeviceState state, AdvancedLocalQueu
                 if (prepared < num_tokens) {
                     auto& stage = queues.tx[prepared % state.stages];
                     if (!local_load(&stage.ready)) {
-                        if (tx_payload_available(state, channel, prepared, reserved)) {
+#if PCIE_EP_ENABLE_PROFILING
+                        ++profile.values[kProfileAvailableCalls];
+                        const bool sample_available = (profile.values[kProfileAvailableCalls] - 1) %
+                            kTransportProfileSampleStride == 0;
+                        const auto available_begin = sample_available ? transport_profile_clock() : 0;
+#endif
+                        const bool available = tx_payload_available(state, channel, prepared, reserved);
+#if PCIE_EP_ENABLE_PROFILING
+                        if (sample_available) {
+                            ++profile.values[kProfileAvailableSamples];
+                            profile.values[kProfileAvailableNs] += transport_profile_clock() - available_begin;
+                        }
+#endif
+                        if (available) {
                             const int token = state.channel_remote_indices[channel * state.base.layout.num_max_tokens_per_rank + prepared];
                             stage.ticket = prepared;
                             stage.payload_slot = prepared % state.base.layout.num_payload_slots;
@@ -280,20 +387,58 @@ __device__ void advanced_tx_control(AdvancedDeviceState state, AdvancedLocalQueu
                         statistics[6]++;
                     }
                 }
-                if (published == num_tokens && tx_drained(state, channel, num_tokens))
-                    local_store(&queues.tx_finished, 1);
+                if (published == num_tokens && !local_load(&queues.tx_finished) &&
+                    global_time_ns() >= drain.next_poll_ns) {
+#if PCIE_EP_ENABLE_PROFILING
+                    ++profile.values[kProfileDrainedCalls];
+                    const auto drained_begin = transport_profile_clock();
+                    const bool drained = drain.progress(state, channel, num_tokens,
+                        &profile.values[kProfileDrainedAckLoads], &profile.values[kProfileDrainedRelayLoads]);
+                    ++profile.values[kProfileDrainedSamples];
+                    profile.values[kProfileDrainedNs] += transport_profile_clock() - drained_begin;
+#else
+                    const bool drained = drain.progress(state, channel, num_tokens);
+#endif
+                    if (drained) {
+                        local_store(&queues.tx_finished, 1);
+#if PCIE_EP_ENABLE_PROFILING
+                        if (!profile.values[kProfileTxFinishedNs])
+                            profile.values[kProfileTxFinishedNs] = transport_profile_clock();
+#endif
+                    }
+                }
                 if (local_load(&queues.tx_finished) && local_load(&queues.rx_finished))
                     queues.tx_action = -1;
-                if ((++rounds & 255) == 0 && advanced_failed(state, start)) {
-                    advanced_record_error(state, kErrorRingProgressWait);
-                    local_store(&queues.abort, 1);
-                }
             }
         }
         __syncwarp();
-        const int action = queues.tx_action;
-        if (action < 0)
+        if (queues.tx_action < 0) {
+            // RX may release abort immediately before rx_finished after the
+            // loop's initial check. Re-acquire at this unified exit so even a
+            // tail failure publishes the terminal mapped signal exactly here.
+            if (!lane && local_load(&queues.abort))
+                store_release_system(signal_value_ptr(own, state.shared.channel_abort_offset, channel), epoch);
             break;
+        }
+        // This warp remains the channel's guardian after TX drains. RX and
+        // idle payload workers depend only on the shared abort verdict.
+        const bool failed = health.poll(state, lane
+#if PCIE_EP_ENABLE_PROFILING
+            , &profile
+#endif
+        );
+        if (!lane && (failed || (channel == 0 && state.control_abort_after_ns &&
+                global_time_ns() - start >= state.control_abort_after_ns))) {
+#if PCIE_EP_ENABLE_PROFILING
+            if (!profile.values[kProfileAbortObservedNs])
+                profile.values[kProfileAbortObservedNs] = transport_profile_clock();
+#endif
+            advanced_record_error(state, kErrorRingProgressWait);
+            local_store(&queues.abort, 1);
+            queues.tx_action = 0;
+        }
+        __syncwarp();
+        const int action = queues.tx_action;
         if (action) {
             auto& stage = queues.tx[queues.tx_stage];
             const int token = state.channel_remote_indices[channel * state.base.layout.num_max_tokens_per_rank + stage.ticket];
@@ -321,34 +466,60 @@ __device__ void advanced_tx_control(AdvancedDeviceState state, AdvancedLocalQueu
                 ++prepared;
             }
         }
+        if (!action)
+            __nanosleep(64);
         __syncwarp();
     }
+#if PCIE_EP_ENABLE_PROFILING
+    if (!lane)
+        profile.save(state, channel, 0);
+#endif
 }
 
 __device__ void advanced_rx_control(
     AdvancedDeviceState state, AdvancedLocalQueues& queues, int channel, int alignment, int lane
 ) {
+#if PCIE_EP_ENABLE_PROFILING
+    TransportProfile profile;
+    if (!lane)
+        profile.values[kProfileEnterNs] = transport_profile_clock();
+#endif
     // Only RX depends on receive counts and output prefixes. The elected,
     // already resident RX warp prepares them while all TX roles progress.
     if (!advanced_prepare_receive_prefixes(state, alignment, lane)) {
         if (!lane) {
             local_store(&queues.abort, 1);
             local_store(&queues.rx_finished, 1);
+#if PCIE_EP_ENABLE_PROFILING
+            profile.values[kProfileRxFinishedNs] = transport_profile_clock();
+            profile.values[kProfilePrefixWaitNs] = profile.values[kProfileRxFinishedNs] - profile.values[kProfileEnterNs];
+            profile.save(state, channel, 1);
+#endif
         }
         // TX-control retains sole ownership of this channel's mapped abort.
         return;
     }
+#if PCIE_EP_ENABLE_PROFILING
+    if (!lane)
+        profile.values[kProfilePrefixWaitNs] = transport_profile_clock() - profile.values[kProfileEnterNs];
+#endif
     int consumed[kNumMaxRanks] = {};
-    int issued = 0, completed = 0, next_source = 0, rounds = 0;
+    int issued = 0, completed = 0, next_source = 0;
     int expected = 0;
     for (int source = 0; source < state.base.layout.num_ranks; ++source)
         if (source != state.base.local_rank)
             expected += state.expected_receive_counts[channel * state.base.layout.num_ranks + source];
     const auto epoch = *state.base.epoch;
-    const auto start = global_time_ns();
     auto* statistics = state.channel_statistics + channel * kNumStatisticsFields;
+#if PCIE_EP_ENABLE_PROFILING
+    if (!lane)
+        profile.values[kProfileItems] = expected;
+#endif
     while (true) {
         if (!lane) {
+#if PCIE_EP_ENABLE_PROFILING
+            ++profile.values[kProfileIterations];
+#endif
             queues.rx_action = 0;
             for (int index = 0; index < state.stages; ++index) {
                 auto& stage = queues.rx[index];
@@ -370,38 +541,61 @@ __device__ void advanced_rx_control(
             } else if (local_load(&queues.abort)) {
                 local_store(&queues.rx_finished, 1);
                 queues.rx_action = -1;
-            } else if (issued < expected && !local_load(&queues.rx[issued % state.stages].ready)) {
-                // Bounded one-source probe; TX-control remains independent.
-                const int source = next_source;
-                next_source = (next_source + 1) % state.base.layout.num_ranks;
-                if (source != state.base.local_rank && consumed[source] <
-                    state.expected_receive_counts[channel * state.base.layout.num_ranks + source]) {
-                    auto* descriptor = receive_descriptor(state, source, channel, consumed[source]);
-                    if (load_acquire_system(&descriptor->ready_sequence) == advanced_sequence(epoch, consumed[source])) {
-                        auto& stage = queues.rx[issued % state.stages];
-                        stage.ticket = issued;
-                        stage.source_rank = source;
-                        stage.payload_slot = descriptor->payload_slot;
-                        stage.payload_sequence = descriptor->payload_sequence;
-                        stage.descriptor_ordinal = consumed[source];
-                        stage.ack_sent = 0;
-                        stage.workers_done = 0;
-                        stage.host_readers_done = 0;
-                        queues.rx_stage = issued % state.stages;
-                        queues.rx_action = 1;
-                    } else {
-                        statistics[4]++;
+            } else if (issued < expected) {
+                if (local_load(&queues.rx[issued % state.stages].ready)) {
+#if PCIE_EP_ENABLE_PROFILING
+                    ++profile.values[kProfileLocalStageBusy];
+#endif
+                } else {
+                    // Bounded one-source probe; TX-control remains independent.
+                    const int source = next_source;
+                    next_source = (next_source + 1) % state.base.layout.num_ranks;
+                    if (source != state.base.local_rank && consumed[source] <
+                        state.expected_receive_counts[channel * state.base.layout.num_ranks + source]) {
+                        auto* descriptor = receive_descriptor(state, source, channel, consumed[source]);
+#if PCIE_EP_ENABLE_PROFILING
+                        ++profile.values[kProfileDescriptorProbeCalls];
+                        const bool sample_probe = (profile.values[kProfileDescriptorProbeCalls] - 1) %
+                            kTransportProfileSampleStride == 0;
+                        const auto probe_begin = sample_probe ? transport_profile_clock() : 0;
+#endif
+                        const auto ready_sequence = load_acquire_system(&descriptor->ready_sequence);
+#if PCIE_EP_ENABLE_PROFILING
+                        if (sample_probe) {
+                            ++profile.values[kProfileDescriptorProbeSamples];
+                            profile.values[kProfileDescriptorProbeNs] += transport_profile_clock() - probe_begin;
+                        }
+#endif
+                        if (ready_sequence == advanced_sequence(epoch, consumed[source])) {
+                            auto& stage = queues.rx[issued % state.stages];
+                            stage.ticket = issued;
+                            stage.source_rank = source;
+                            stage.payload_slot = descriptor->payload_slot;
+                            stage.payload_sequence = descriptor->payload_sequence;
+                            stage.descriptor_ordinal = consumed[source];
+                            stage.ack_sent = 0;
+                            stage.workers_done = 0;
+                            stage.host_readers_done = 0;
+                            queues.rx_stage = issued % state.stages;
+                            queues.rx_action = 1;
+                        } else {
+                            statistics[4]++;
+#if PCIE_EP_ENABLE_PROFILING
+                            ++profile.values[kProfileDescriptorNotReady];
+#endif
+                        }
                     }
                 }
             }
-            if ((++rounds & 255) == 0 && advanced_failed(state, start)) {
-                advanced_record_error(state, kErrorRingProgressWait);
-                local_store(&queues.abort, 1);
-            }
         }
         __syncwarp();
-        if (queues.rx_action < 0)
+        if (queues.rx_action < 0) {
+#if PCIE_EP_ENABLE_PROFILING
+            if (!lane)
+                profile.values[kProfileRxFinishedNs] = transport_profile_clock();
+#endif
             break;
+        }
         if (queues.rx_action) {
             auto& stage = queues.rx[queues.rx_stage];
             metadata_copy_warp(&stage.metadata, receive_metadata(state, stage.source_rank, channel, stage.payload_slot), lane);
@@ -424,10 +618,19 @@ __device__ void advanced_rx_control(
         }
         __syncwarp();
     }
+#if PCIE_EP_ENABLE_PROFILING
+    if (!lane)
+        profile.save(state, channel, 1);
+#endif
 }
 
 __device__ void advanced_tx_worker(AdvancedDeviceState state, AdvancedLocalQueues& queues, int channel, int warp, int lane) {
     int ticket = 0;
+#if PCIE_EP_ENABLE_PROFILING
+    TransportProfile profile;
+    if (!lane)
+        profile.values[kProfileEnterNs] = transport_profile_clock();
+#endif
     while (true) {
         auto& stage = queues.tx[ticket % state.stages];
         int action = 0;
@@ -453,15 +656,36 @@ __device__ void advanced_tx_worker(AdvancedDeviceState state, AdvancedLocalQueue
                 (hidden % 8 ? hidden : hidden / 8);
             if (warp * 32 + lane == min(95, units - 1))
                 test_delay(state.tx_delay_ns);
+#if PCIE_EP_ENABLE_PROFILING
+            const bool sample = ticket % kTransportProfileSampleStride == 0;
+            std::uint64_t begin = 0, copied = 0;
+            if (!lane && sample)
+                begin = transport_profile_clock();
+#endif
             copy_tx_payload(state, stage, channel, warp * 32 + lane, 96);
+#if PCIE_EP_ENABLE_PROFILING
+            if (!lane && sample)
+                copied = transport_profile_clock();
+#endif
             __threadfence_system();
             __syncwarp();
+#if PCIE_EP_ENABLE_PROFILING
+            if (!lane) {
+                ++profile.values[kProfileIterations];
+                if (sample)
+                    profile.record_work(begin, copied, transport_profile_clock());
+            }
+#endif
             if (!lane)
                 local_arrive(&stage.workers_done);
             ++ticket;
         }
         __syncwarp();
     }
+#if PCIE_EP_ENABLE_PROFILING
+    if (!lane)
+        profile.save(state, channel, warp + 2);
+#endif
 }
 
 __device__ void advanced_rx_worker(

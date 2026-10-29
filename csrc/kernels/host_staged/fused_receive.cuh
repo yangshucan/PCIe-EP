@@ -132,15 +132,32 @@ __device__ inline void scatter_rx_tile_vectorized(
 __device__ inline void fused_receive_copy_host_payload(
     AdvancedDeviceState& state, AdvancedLocalQueues& queues, AdvancedLocalStage& stage,
     int channel, int ticket, int warp, int lane, std::uint16_t* tiles
+#if PCIE_EP_ENABLE_PROFILING
+    , TransportProfile* profile = nullptr
+#endif
 ) {
     const int hidden = state.base.layout.num_hidden;
     const int units = state.payload_dtype ? hidden : (hidden % 8 ? hidden : hidden / 8);
     if (warp * 32 + lane == min(kNumFusedReceiveWorkerThreads - 1, units - 1))
         test_delay(state.rx_delay_ns);
     auto* tile = tiles + std::size_t(ticket % state.stages) * hidden;
+#if PCIE_EP_ENABLE_PROFILING
+    const bool sample = profile && ticket % kTransportProfileSampleStride == 0;
+    std::uint64_t begin = 0, copied = 0;
+    if (!lane && sample)
+        begin = transport_profile_clock();
+#endif
     copy_rx_payload(state, stage, channel, tile, warp * 32 + lane, kNumFusedReceiveWorkerThreads);
+#if PCIE_EP_ENABLE_PROFILING
+    if (!lane && sample)
+        copied = transport_profile_clock();
+#endif
     __threadfence_system();
     __syncwarp();
+#if PCIE_EP_ENABLE_PROFILING
+    if (!lane && sample)
+        profile->record_work(begin, copied, transport_profile_clock());
+#endif
     if (!lane)
         local_arrive(&stage.host_readers_done);
 }
@@ -184,6 +201,11 @@ __device__ void fused_receive_producer(
     int warp, int lane, std::uint16_t* tiles, std::int64_t* receive_expand_overlap
 ) {
     int ticket = 0;
+#if PCIE_EP_ENABLE_PROFILING
+    TransportProfile profile;
+    if (!lane)
+        profile.values[kProfileEnterNs] = transport_profile_clock();
+#endif
     while (true) {
         auto& stage = queues.rx[ticket % state.stages];
         const int action = fused_receive_stage_action(queues, stage, ticket, lane, false);
@@ -201,11 +223,23 @@ __device__ void fused_receive_producer(
                 if (completed < ticket)
                     diagnostic[kReceiveExpandOverlapCount]++;
             }
-            fused_receive_copy_host_payload(state, queues, stage, channel, ticket, warp, lane, tiles);
+            fused_receive_copy_host_payload(state, queues, stage, channel, ticket, warp, lane, tiles
+#if PCIE_EP_ENABLE_PROFILING
+                , &profile
+#endif
+            );
+#if PCIE_EP_ENABLE_PROFILING
+            if (!lane)
+                ++profile.values[kProfileIterations];
+#endif
             ++ticket;
         }
         __syncwarp();
     }
+#if PCIE_EP_ENABLE_PROFILING
+    if (!lane)
+        profile.save(state, channel, warp + 5);
+#endif
 }
 
 // Consumers touch only shared metadata/tile and current-GPU output/workspace.
@@ -215,6 +249,11 @@ __device__ void fused_receive_consumer(
     int warp, int lane, std::uint16_t* tiles, std::int64_t* receive_expand_overlap
 ) {
     int ticket = 0;
+#if PCIE_EP_ENABLE_PROFILING
+    TransportProfile profile;
+    if (!lane)
+        profile.values[kProfileEnterNs] = transport_profile_clock();
+#endif
     while (true) {
         auto& stage = queues.rx[ticket % state.stages];
         const int action = fused_receive_stage_action(queues, stage, ticket, lane, true);
@@ -225,11 +264,28 @@ __device__ void fused_receive_consumer(
             // were acquired by the leader. shfl alone orders no memory.
             __syncwarp();
             fused_receive_scatter_delay(state, warp * 32 + lane);
+#if PCIE_EP_ENABLE_PROFILING
+            const bool sample = ticket % kTransportProfileSampleStride == 0;
+            std::uint64_t begin = 0, copied = 0;
+            if (!lane && sample)
+                begin = transport_profile_clock();
+#endif
             scatter_rx_tile_vectorized(state, stage,
                 tiles + std::size_t(ticket % state.stages) * state.base.layout.num_hidden,
                 warp * 32 + lane, &queues.abort);
+#if PCIE_EP_ENABLE_PROFILING
+            if (!lane && sample)
+                copied = transport_profile_clock();
+#endif
             __threadfence_system();
             __syncwarp();
+#if PCIE_EP_ENABLE_PROFILING
+            if (!lane) {
+                ++profile.values[kProfileIterations];
+                if (sample)
+                    profile.record_work(begin, copied, transport_profile_clock());
+            }
+#endif
             if (!lane) {
                 if (warp == kNumFusedReceiveWorkerWarps - 1 && receive_expand_overlap) {
                     auto* diagnostic = receive_expand_overlap + channel * kNumReceiveExpandDiagnosticFields;
@@ -242,6 +298,10 @@ __device__ void fused_receive_consumer(
         }
         __syncwarp();
     }
+#if PCIE_EP_ENABLE_PROFILING
+    if (!lane)
+        profile.save(state, channel, warp + 8);
+#endif
 }
 
 // Host selection requires specialization + expert expansion. Unique receive

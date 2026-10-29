@@ -1,0 +1,56 @@
+{
+  "production_runtime": {
+    "csrc/buffers/advanced.hpp": "ff9d3d8ba316cab92d92b07afc78e84fa9c2256baab07a70872e991090c833e2",
+    "csrc/comm/advanced_shared_memory.hpp": "ab138254ab7225d99d5e19f98ce91559a7aca170ec43a8f1aeac08fba7ac1d7a",
+    "csrc/comm/host_shared_memory.hpp": "52d833b74295cb8fcbee019c575cea7d9dade4a2b41126dd988a01f1b35d2fbe",
+    "csrc/comm/numa_relay.hpp": "e150da32fa39119971c951b78023333ab27101d1925e9200b6e178017cd211ec",
+    "csrc/kernels/host_staged/advanced_common.cuh": "6c33f7591835dc075e34298a636fa8a3d63d1c9635c4afcdb3a10a2d756ab968",
+    "csrc/kernels/host_staged/advanced_dispatch.cuh": "781b7715d8b099b20b11524fb77f65164e85d023f2fe1f1a3dd2f1349a477a17",
+    "csrc/kernels/host_staged/advanced_layout.cuh": "ab015fa26e6f7f938f6a15f958b455c3b9ab53c2adeaeee027c546470a3fbf3e",
+    "csrc/kernels/host_staged/common.cuh": "cc6d45f8270c7d66b290a1286bc2a9f437d6bd38720e85cdf4bb0086d405d0e4",
+    "csrc/kernels/host_staged/dispatch.cuh": "1cf5072e8fc20634fd33bca47a1c4927f9630de6969ccea2c17cd3d74e1f10b4",
+    "csrc/kernels/host_staged/fused_receive.cuh": "856cd29ee7494c22244ed1d61a4396cc93746348b3cea0cf65ec5ce7623e9f63",
+    "csrc/kernels/host_staged/layout.cuh": "43c0ba3f1b92435ead08dc9b839b652eeb7fc3caf101396c5882ad28dd37811d",
+    "csrc/kernels/host_staged/quantization.cuh": "6f7b89716b26aaad79bb1fe39d0508fe8d3540480a3806d68e23b23818e2ce4e",
+    "csrc/runtime.cu": "815e6d66f8e5a15b53411549f276e85781a52936b350470964de9388e9f61440",
+    "pcie_ep/_C.py": "a3071aa8b6c5bc76122d259afb11828fd95de6211720dcac4691002b67c7a6a0",
+    "pcie_ep/__init__.py": "686a6fc3ffa86a116e8c492c0e1022424fe42bbff372d069f351990f0e4436a9",
+    "pcie_ep/buffer.py": "f2995cbf3f1e4af9868ad07b9a46b1b2bd52b277cbfd01d547a37b23dc92349e",
+    "pcie_ep/buffers/__init__.py": "2220d69f1559378b52184821f452ea845664cfe52759d613f0aee60e64612212",
+    "pcie_ep/buffers/ep.py": "8d6a10723a62180cf78088d31ea6581db4c490d79874882e92e47fde14e89e1e",
+    "pcie_ep/buffers/handle.py": "0c901522eae1860efeac54c12380f8bd2c4bdca0e6d38b35db73d9cd6b3eafe0",
+    "pcie_ep/comm.py": "dd862a82772a9386e7b384435338bd6adc767a6cbd492a52c0f361795a88222f",
+    "pcie_ep/config.py": "9bdf963cd51a30783088c4774114a7780a7de0ba03450e6aabf863d14375e9b1",
+    "pcie_ep/graph.py": "0a9a1190dca6987284893024cd2cc080dbbe4dd12e2493e4242e6267d96239ab",
+    "pcie_ep/native.py": "53cfc885a7be6f88122d73666e0aff97653eefeda40bb6506ded6353284baa39",
+    "pcie_ep/quantization.py": "2cc928bbb2f022299e5ca40f6637da505eca76da0a9215b1bc5d700b60799d8f",
+    "pcie_ep/utils/__init__.py": "a2eb131ffa7be016e5566f8da829957a7f3d86ce48bcd95bea1f8ee87adc8fc5",
+    "pcie_ep/utils/event.py": "6a05fc86e1a07de03292cae206ab724beda25c9086636ac64252514f2fd52387"
+  },
+  "benchmark_runtime": {
+    "benchmarks/benchmark.py": "d5c40cbaaac870512c02c45bc6556c4ef05a97f6a830805c17d8ecd42dc139e6",
+    "benchmarks/benchmark_nccl_shm.py": "8e4502e672ea6b5e85a3aae1e2e7d5c77c653eaaa57e85950b5f07f2c350f047",
+    "benchmarks/nccl_expand.py": "26f1ca4b160d04fa3b6b1fae61c7400068566c9b231386ee023397189003655f",
+    "benchmarks/csrc/nccl_expand.cu": "f0edee182e4f5aad43c9b6d9fefeff20e85140440e7ea896f442742663312b7e"
+  },
+  "software": {
+    "pytorch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "nccl": [
+      2,
+      29,
+      7
+    ],
+    "cuda_initialized": false,
+    "nccl_libraries": [
+      {
+        "filename": "libnccl.so.2",
+        "sha256": "aa957cdfb91b516eae0d54a28e9ee5db52730d02e0ab45580efc3c19a68327a4"
+      }
+    ],
+    "extensions": {
+      "pcie_ep_cuda": "9f65841e98709e6c04c5d3d356b80c7cee74c5f3b6c21b0d1c5ffa18421ad299",
+      "pcie_ep_nccl_expand": "140dfb9b2d15f803a4cbd97855db38e8fe7bbe715b4a346118f158867801f417"
+    }
+  }
+}

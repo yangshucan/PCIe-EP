@@ -16,6 +16,11 @@ _SOURCE_DIRECTORY = Path(__file__).resolve().parents[1] / "csrc"
 _CUDA_SOURCE = _SOURCE_DIRECTORY / "runtime.cu"
 _CUDA_FLAGS = ["-O3", "-lineinfo", "--expt-relaxed-constexpr", "-std=c++20"]
 _HOST_FLAGS = ["-O2", "-std=c++20"]
+# Use a separate TORCH_EXTENSIONS_DIR when comparing instrumented/release runs.
+# No profiling allocation, clock read or counter exists in the default build.
+if os.getenv("PCIE_EP_PROFILE", "0") == "1":
+    _CUDA_FLAGS.append("-DPCIE_EP_ENABLE_PROFILING=1")
+    _HOST_FLAGS.append("-DPCIE_EP_ENABLE_PROFILING=1")
 
 _module = load(
     name="pcie_ep_cuda",

@@ -14,8 +14,8 @@
 namespace pcie_ep::host_staged {
 
 struct AdvancedConfig {
-    // Host-only launch selection. AdvancedDeviceState and shared layouts keep
-    // their existing ABI; unique receives always use the reference transport.
+    // Host-only launch selection; the mapped transport layout is unchanged.
+    // Unique receives always use the current reference transport.
     enum class ReceiveExpandMode { Scalar, Vectorized, Pipelined };
 
     int stage = 6;
@@ -39,6 +39,8 @@ struct AdvancedConfig {
     std::uint64_t rx_delay_ns = 0;
     std::uint64_t scatter_delay_ns = 0;
     std::uint64_t prefix_delay_ns = 0;
+    std::uint64_t control_abort_after_ns = 0;
+    int counts_ack_skip_source = -1;
     std::uint64_t relay_delay_ns = 0;
     std::vector<int> rank_numa_nodes;
     std::vector<int> physical_numa_nodes;

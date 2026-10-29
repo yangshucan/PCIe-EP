@@ -41,21 +41,51 @@ __global__ void advanced_begin_epoch(AdvancedDeviceState state) {
             aborted = true;
     }
     const bool any_abort = __syncthreads_or(aborted);
-    if (threadIdx.x)
+    if (!threadIdx.x) {
+        ++*state.base.epoch;
+        if (*state.base.epoch >= 0x100000000ull) {
+            advanced_record_error(state, kErrorEpochExhausted);
+            store_release_system(signal_value_ptr(state.base.mapped_source_buffers[state.base.local_rank],
+                state.shared.channel_abort_offset), *state.base.epoch);
+        } else if (any_abort) {
+            advanced_record_error(state, kErrorRuntimeAlreadyAborted);
+            store_release_system(signal_value_ptr(state.base.mapped_source_buffers[state.base.local_rank],
+                state.shared.channel_abort_offset), *state.base.epoch);
+        }
+    }
+    // Publish the new epoch/error verdict to the complete CTA before only the
+    // first warp proceeds. No thread may leave before this final CTA barrier.
+    __syncthreads();
+    if (threadIdx.x >= 32)
         return;
 
-    ++*state.base.epoch;
-    if (*state.base.epoch >= 0x100000000ull) {
-        advanced_record_error(state, kErrorEpochExhausted);
-        store_release_system(signal_value_ptr(state.base.mapped_source_buffers[state.base.local_rank],
-            state.shared.channel_abort_offset), *state.base.epoch);
+    const int lane = threadIdx.x;
+    const auto epoch = *state.base.epoch;
+    if (epoch <= 1 || state.base.errors[kErrorCodeField])
         return;
+
+    // The count mailbox is source-owned and shared by all channel writers.
+    // Acquire every peer's preceding-epoch consumption once, before any later
+    // kernel can overwrite rank/expert, channel, or relay endpoint counts.
+    auto* own = state.base.mapped_source_buffers[state.base.local_rank];
+    bool consumed = lane >= state.base.layout.num_ranks || lane == state.base.local_rank;
+    AdvancedHealthCheck health(state, global_time_ns());
+    while (true) {
+        if (!consumed)
+            consumed = load_acquire_system(signal_value_ptr(own,
+                state.base.layout.counts_consumed_offset, lane)) == epoch - 1;
+        if (__all_sync(0xffffffffu, consumed))
+            break;
+        if (health.poll(state, lane)) {
+            if (!lane) {
+                advanced_record_error(state, kErrorCountsMailboxWait);
+                store_release_system(signal_value_ptr(own, state.shared.channel_abort_offset), epoch);
+            }
+            return;
+        }
+        __nanosleep(32);
     }
-    if (any_abort) {
-        advanced_record_error(state, kErrorRuntimeAlreadyAborted);
-        store_release_system(signal_value_ptr(state.base.mapped_source_buffers[state.base.local_rank],
-            state.shared.channel_abort_offset), *state.base.epoch);
-    }
+    __syncwarp();
 }
 
 // One resident RX-control warp owns all mailbox reads, including channel
@@ -67,6 +97,7 @@ __device__ bool advanced_compute_receive_prefixes_warp(AdvancedDeviceState state
     const int experts_per_rank = base.layout.num_experts / ranks;
     const auto epoch = *base.epoch;
     const auto start = global_time_ns();
+    AdvancedHealthCheck health(state, start);
     if (!lane) {
         state.prefix_tx_timestamps_ns[0] = start;
         test_delay(state.prefix_delay_ns);
@@ -77,19 +108,20 @@ __device__ bool advanced_compute_receive_prefixes_warp(AdvancedDeviceState state
     __syncwarp();
     for (int source = 0; source < ranks; ++source) {
         auto* segment = base.mapped_source_buffers[source];
-        int failed = 0;
-        if (!lane) {
-            while (load_acquire_system(signal_value_ptr(segment, base.layout.counts_ready_offset)) != epoch) {
-                if (advanced_failed(state, start)) {
+        while (true) {
+            int available = 0;
+            if (!lane)
+                available = load_acquire_system(signal_value_ptr(segment, base.layout.counts_ready_offset)) == epoch;
+            available = __shfl_sync(0xffffffffu, available, 0);
+            if (available)
+                break;
+            if (health.poll(state, lane)) {
+                if (!lane)
                     advanced_record_error(state, kErrorCountsReadyWait);
-                    failed = 1;
-                    break;
-                }
-                __nanosleep(32);
+                return false;
             }
+            __nanosleep(32);
         }
-        if (__shfl_sync(0xffffffffu, failed, 0))
-            return false;
         __syncwarp();  // Leader's system acquire -> all mailbox readers.
         auto* counts = reinterpret_cast<int*>(segment + base.layout.counts_offset);
         auto* channel_counts = reinterpret_cast<int*>(segment + state.shared.channel_counts_offset);
@@ -103,7 +135,7 @@ __device__ bool advanced_compute_receive_prefixes_warp(AdvancedDeviceState state
             state.expected_receive_counts[channel * ranks + source] = channel_counts[channel * ranks + base.local_rank];
         __threadfence_system();
         __syncwarp();
-        if (!lane && source != base.local_rank)
+        if (!lane && source != base.local_rank && source != state.counts_ack_skip_source)
             store_release_system(signal_value_ptr(segment, base.layout.counts_consumed_offset, base.local_rank), epoch);
     }
     __syncwarp();
@@ -334,27 +366,11 @@ __global__ void advanced_prepare_channels_parallel(AdvancedDeviceState state, in
     const int ranks = state.base.layout.num_ranks;
     auto* own = state.base.mapped_source_buffers[state.base.local_rank];
     const auto epoch = *state.base.epoch;
-    const auto start = global_time_ns();
     if (!threadIdx.x) {
-        // Channel CTAs can discover a mailbox timeout independently. Keep
-        // the early-exit verdict uniform even if another CTA reports first.
+        // begin_epoch already acquired the shared count-mailbox credit. Latch
+        // one entry verdict for this CTA before its collective compaction.
         failed = state.base.errors[kErrorCodeField] != 0;
         remote_prefix = 0;
-        if (!failed && epoch > 1) {
-            for (int rank = 0; rank < ranks; ++rank) {
-                if (rank == state.base.local_rank)
-                    continue;
-                while (load_acquire_system(signal_value_ptr(own, state.base.layout.counts_consumed_offset, rank)) != epoch - 1) {
-                    if (advanced_failed(state, start)) {
-                        advanced_record_error(state, kErrorCountsMailboxWait);
-                        failed = 1;
-                        break;
-                    }
-                }
-                if (failed)
-                    break;
-            }
-        }
         if (failed)
             store_release_system(signal_value_ptr(own, state.shared.channel_abort_offset, channel), epoch);
     }

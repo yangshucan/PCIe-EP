@@ -1,0 +1,20 @@
+{
+  "pytorch": "2.13.0+cu130",
+  "cuda": "13.0",
+  "nccl": [
+    2,
+    29,
+    7
+  ],
+  "cuda_initialized": false,
+  "nccl_libraries": [
+    {
+      "filename": "libnccl.so.2",
+      "sha256": "aa957cdfb91b516eae0d54a28e9ee5db52730d02e0ab45580efc3c19a68327a4"
+    }
+  ],
+  "extensions": {
+    "pcie_ep_cuda": "9f65841e98709e6c04c5d3d356b80c7cee74c5f3b6c21b0d1c5ffa18421ad299",
+    "pcie_ep_nccl_expand": "140dfb9b2d15f803a4cbd97855db38e8fe7bbe715b4a346118f158867801f417"
+  }
+}

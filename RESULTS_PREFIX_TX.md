@@ -1,5 +1,7 @@
 # 并行初始化与 prefix/TX 重叠：性能对比
 
+本文保留 2026-10-28 的历史结果。后续控制路径优化及重新测量的基线对比见 [RESULTS_CONTROL_PROGRESS.md](RESULTS_CONTROL_PROGRESS.md)；下表数值保持原始测量不变。
+
 2026-10-28，在同一台 8×H20D 机器上重新测量原版本与新版本。基线为 Git `865cc49`；本表不是沿用 10 月 25 日的历史时延。
 
 本次只优化两处：`begin_epoch` 改成 256-thread CTA，分摊诊断初始化和终止标志检查；specialized transport 的 RX 控制 warp 在 GPU 内认领 count/prefix 处理，TX 不再等待前置接收 prefix kernel。本地 token copy 排在 transport 后，最终 expert/source/token 稳定顺序保持不变。详见[实现与同步协议](docs/pcie-ep/prefix-tx-overlap.md)。

@@ -87,7 +87,9 @@ Q/L 表示每个源 ring 和每个源→目标 descriptor 队列的容量，不�
 
 高级阶段可组合此前阶段的优化，例如 S8 relay 可与 FP8、缓存路由和 Graph 同用。功能仍需显式启用，单独选择更高 stage 不会自动打开所有开关。
 
-`receive_expand_mode="vectorized"` 将 shared→expert BF16 拷贝改为 16-byte 向量；`"pipelined"` 再用独立 RX/scatter warp 组流水，CTA 从 256 增至 352 threads。`do_expand=False` 始终回到原 unique 路径。默认改为 pipelined，模式在构造时固定，各 rank 须一致；H 不能被 8 整除时本地 scatter 完整回退标量。详见 [F2 实现与生命周期](docs/pcie-ep/f2-receive-expand.md)和[十个 batch 的实测](RESULTS_F2.md)。
+specialized transport 由 TX control warp 持续监测健康状态，即使发送已完成，也保持存活到接收完成。所有 lanes 协作读取 mapped abort flags，扫描间隔为上次扫描完成后的 `min(1 ms, timeout_ms/8)`；本地 timeout 每个有界控制迭代检查。接收 prefix 等待另有协作检查。实际错误响应还包含当前控制迭代和扫描耗时，不能中断已发出的 PCIe 操作。这些策略由运行时管理，没有新增公开调参项；主路径仍无 CPU 同步。增量 tail ACK 与上一轮 counts mailbox 回收协议见 [control-progress](docs/pcie-ep/control-progress.md)，当前十档测量见 [性能结果](RESULTS_CONTROL_PROGRESS.md)。
+
+`receive_expand_mode="vectorized"` 将 shared→expert BF16 拷贝改为 16-byte 向量；`"pipelined"` 再用独立 RX/scatter warp 组流水，CTA 从 256 增至 352 threads。`do_expand=False` 始终回到原 unique 路径。默认改为 pipelined，模式在构造时固定，各 rank 须一致；H 不能被 8 整除时本地 scatter 完整回退标量。详见 [F2 实现与生命周期](docs/pcie-ep/f2-receive-expand.md)和[十个 batch 的当前实测](RESULTS_CONTROL_PROGRESS.md)。
 
 FP8 wire 支持有限 BF16 输入，不保证 NaN/Inf 的传输语义。非零 token 的 scale 为 `max(maxabs/448, 2**-126)`，零 token 的 scale 为 1。`2**-126` 是 FP32 最小正规数；该下限防止 BF16 极小值或 subnormal 产生无穷大的倒数，进而使零分量在量化时变成 NaN。解码按 FP8 值乘以 scale 后舍入回 BF16。
 
